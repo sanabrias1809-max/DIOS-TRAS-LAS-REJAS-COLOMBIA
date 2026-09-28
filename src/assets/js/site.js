@@ -77,6 +77,26 @@
     modal.querySelectorAll('[data-video-close]').forEach((b) => b.addEventListener('click', modal._close));
   }
 
+  // Carrusel de la portada: fundido suave cada 6 s, con puntos navegables
+  const slider = d.querySelector('[data-slider]');
+  if (slider) {
+    const slides = [...slider.children];
+    const dots = [...d.querySelectorAll('[data-dot]')];
+    let i = 0;
+    let timer;
+    const go = (n) => {
+      slides[i].classList.remove('is-active');
+      dots[i]?.setAttribute('aria-selected', 'false');
+      i = (n + slides.length) % slides.length;
+      slides[i].classList.add('is-active');
+      dots[i]?.setAttribute('aria-selected', 'true');
+      slides[i].querySelector('img')?.removeAttribute('loading');
+    };
+    const start = () => { if (!reduce) timer = setInterval(() => go(i + 1), 6000); };
+    dots.forEach((b) => b.addEventListener('click', () => { clearInterval(timer); go(+b.dataset.dot); start(); }));
+    start();
+  }
+
   // Revelado: textos, titulares y líneas
   const items = d.querySelectorAll('[data-reveal], [data-split], [data-line]');
   if (reduce || !('IntersectionObserver' in window)) items.forEach((i) => i.classList.add('is-in'));
