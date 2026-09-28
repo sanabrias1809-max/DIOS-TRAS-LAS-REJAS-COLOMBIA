@@ -8,7 +8,7 @@ export const site = {
   name: 'Dios Tras Las Rejas Colombia',
   legalName: 'Fundación Dios Tras Las Rejas Colombia',
   // Dominio definitivo. Configúralo con SITE_URL (sin "/" final).
-  url: env('SITE_URL', 'https://www.diostraslasrejas.lat').replace(/\/$/, ''),
+  url: env('SITE_URL', 'https://diostraslasrejas.lat').replace(/\/$/, ''),
   locale: 'es_CO',
   lang: 'es-CO',
   defaultOg: '/assets/img/og-default.jpg',
