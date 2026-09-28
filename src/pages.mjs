@@ -1,37 +1,88 @@
 import { site, waLink } from './config.mjs';
-import { programs, ways, verse, stories, TBD } from './content.mjs';
-import { page, opener, closer, rh, more, pic, frame, tbd, esc, arrow } from './layout.mjs';
+import { programs, ways, verse, stories, cycles, milestones, founders, allies, TBD } from './content.mjs';
+import { page, cover, closer, T, kicker, more, btn, pic, frame, tbd, esc, arrow, play } from './layout.mjs';
 
-// ───────────────────────── Piezas del sistema ─────────────────────────
+// ───────────────────────── Componentes ─────────────────────────
 
-// Recorrido de programas: filas separadas por líneas, nombre en serif.
-const pathRows = (items = programs) => `
+const chain = (light = false) => `
+<p class="chain${light ? ' chain--light' : ''}" data-reveal aria-label="El camino: fe, formación, identidad, acompañamiento, propósito, libertad">
+  ${['Fe', 'Formación', 'Identidad', 'Acompañamiento', 'Propósito', 'Libertad'].map((w, i, a) => `<span${i === a.length - 1 ? ' class="is-end"' : ''}>${w}</span>`).join('<i aria-hidden="true"></i>')}
+</p>`;
+
+// Programas como paneles fotográficos (acordeón en escritorio, carrusel en móvil)
+const programStrip = () => `
+<ol class="strip" data-strip>
+  ${programs
+    .map(
+      (p) => `<li class="strip__i"><a href="/programas/${p.slug}">
+      ${pic(p.hero, p.heroAlt, { sizes: '(min-width: 900px) 40vw, 82vw', pos: p.heroPos })}
+      <span class="strip__n">${p.n}</span>
+      <span class="strip__b">
+        <span class="strip__w">${p.word}</span>
+        <span class="strip__t">${p.name}</span>
+        <span class="strip__d">${p.short}</span>
+        <span class="strip__go">Conocer ${arrow}</span>
+      </span>
+    </a></li>`,
+    )
+    .join('')}
+</ol>`;
+
+// Filas de programas (páginas internas)
+const pathRows = () => `
 <ol class="rows">
-  ${items
+  ${programs
     .map(
       (p) => `<li data-line><a href="/programas/${p.slug}" class="rows__a">
       <span class="rows__n">${p.n}</span>
+      <span class="rows__img">${pic(p.hero, p.heroAlt, { sizes: '180px', pos: p.heroPos })}</span>
       <span class="rows__t">${p.name}</span>
-      <span class="rows__m">${p.principle} · ${p.word}</span>
-      <span class="rows__d">${p.short}</span>
+      <span class="rows__d"><span class="rows__m">${p.principle} · ${p.word}</span>${p.short}</span>
       ${arrow}
     </a></li>`,
     )
     .join('')}
 </ol>`;
 
-// Cadena narrativa del camino
-const chain = () => `
-<p class="chain" data-reveal aria-label="El camino: fe, formación, identidad, acompañamiento, propósito, libertad">
-  ${['Fe', 'Formación', 'Identidad', 'Acompañamiento', 'Propósito', 'Libertad'].map((w, i, a) => `<span${i === a.length - 1 ? ' class="is-end"' : ''}>${w}</span>`).join('<i aria-hidden="true"></i>')}
-</p>`;
+// Hitos: cuando acompañar también significa transformar los espacios
+const milestonesBlock = (n = '') => {
+  const [patio, reen] = milestones;
+  return `
+<section class="deeds" aria-labelledby="deeds-h">
+  <div class="wrap deeds__head">
+    ${kicker(`${n}De acompañar a transformar`)}
+    ${T('Cuando acompañar también significa', 'Transformar los espacios', { id: 'deeds-h' })}
+    <p class="lede" data-reveal>No todo lo que transforma una vida ocurre dentro de un programa. A veces comienza con un lugar digno para encontrarse. Con un piso nuevo. Con una cuna. Con una familia que vuelve a abrazarse.</p>
+  </div>
+  <article class="deed" id="${patio.id}">
+    <figure class="deed__img" data-reveal>${pic(patio.img, patio.alt, { sizes: '(min-width: 900px) 62vw, 100vw' })}</figure>
+    <div class="deed__txt" data-reveal>
+      <p class="deed__tag">${patio.tag}</p>
+      <h3 class="deed__t">${patio.name}</h3>
+      <p class="deed__l">${patio.line}</p>
+      <p>${patio.text}</p>
+    </div>
+  </article>
+  <article class="deed deed--dark" id="${reen.id}">
+    <div class="wrap deed__in" data-reveal>
+      <p class="deed__tag">${reen.tag}</p>
+      <h3 class="deed__t">${reen.name}</h3>
+      <p class="deed__l">${reen.line}</p>
+      <p>${reen.text}</p>
+    </div>
+  </article>
+  <div class="wrap">
+    <blockquote class="deeds__q" data-split><p>Transformar un espacio también puede transformar la manera en que una familia se encuentra</p></blockquote>
+  </div>
+</section>`;
+};
 
-// Lucas 4:18 anotado: el versículo como mapa del trabajo
-const verseMap = (n = '07', label = 'Nuestro fundamento') => `
+// Lucas 4:18 anotado
+const verseMap = (n = '') => `
 <section class="verse" aria-labelledby="verse-h">
   <div class="wrap">
-    ${rh(n, label)}
-    <h2 id="verse-h" class="verse__ref" data-reveal>${verse.ref}</h2>
+    ${kicker(`${n}Nuestro fundamento`, 'k--light')}
+    <h2 id="verse-h" class="verse__ref" data-split>${verse.ref}</h2>
     <ol class="verse__lines">
       ${verse.lines
         .map(
@@ -46,7 +97,12 @@ const verseMap = (n = '07', label = 'Nuestro fundamento') => `
   </div>
 </section>`;
 
-// Formulario con líneas (sin cajas)
+const waysIndex = () => `
+<ul class="index">
+  ${ways.map((w, i) => `<li data-line><a href="${w.href || `/participa#${w.id}`}"><span class="index__n">${String(i + 1).padStart(2, '0')}</span><span class="index__t">${w.t}</span><span class="index__d">${w.d}</span>${arrow}</a></li>`).join('')}
+</ul>`;
+
+// Formularios
 let fid = 0;
 const field = ({ name, label, type = 'text', required = true, auto = '', options, rows }) => {
   const id = `f${++fid}`;
@@ -74,6 +130,14 @@ const baseFields = [
   { name: 'telefono', label: 'Teléfono o WhatsApp', type: 'tel', auto: 'tel', required: false },
 ];
 
+const bank = site.donate.bank;
+const bankLine = () => `<dl class="bank">
+  <div><dt>Banco</dt><dd>${esc(bank.bank)}</dd></div>
+  <div><dt>${esc(bank.type)}</dt><dd><span data-copy>${esc(bank.number)}</span> <button type="button" class="copy" data-copy-btn aria-label="Copiar número de cuenta">Copiar</button></dd></div>
+  <div><dt>Titular</dt><dd>${esc(bank.holder)}</dd></div>
+  <div><dt>NIT</dt><dd>${esc(bank.nit)}</dd></div>
+</dl>`;
+
 const donateForm = () => {
   const d = site.donate;
   return `
@@ -82,13 +146,13 @@ const donateForm = () => {
     <input type="radio" name="freq" id="fq1" value="única" checked><label for="fq1">Una vez</label>
     <input type="radio" name="freq" id="fq2" value="mensual"><label for="fq2">Cada mes</label>
   </fieldset>
-  <fieldset class="give__amt"><legend>Monto en pesos colombianos</legend>
-    ${[50000, 100000, 200000, 500000].map((v, i) => `<input type="radio" name="amount" id="a${v}" value="${v}"${i === 1 ? ' checked' : ''}><label for="a${v}">${v.toLocaleString('es-CO')}</label>`).join('')}
+  <fieldset class="give__amt"><legend>Monto en pesos colombianos</legend><div class="give__grid">
+    ${[50000, 100000, 200000, 500000].map((v, i) => `<input type="radio" name="amount" id="a${v}" value="${v}"${i === 1 ? ' checked' : ''}><label for="a${v}">$${v.toLocaleString('es-CO')}</label>`).join('')}
     <input type="radio" name="amount" id="a-otro" value="otro"><label for="a-otro">Otro</label>
-  </fieldset>
+  </div></fieldset>
   <div class="field give__other" hidden><label for="am-custom">Escribe el monto</label><input id="am-custom" name="custom" inputmode="numeric" autocomplete="off" aria-describedby="am-err"><p class="err" id="am-err" aria-live="polite"></p></div>
-  <button class="btn btn--gold" type="submit"><span>Hacer posible el acompañamiento</span>${arrow}</button>
-  <p class="form__note">${d.onceUrl || d.monthlyUrl ? `Pago seguro a través de ${esc(d.providerName || 'nuestra pasarela de pagos')}.` : 'Mientras habilitamos el pago en línea, coordinamos tu aporte contigo por WhatsApp, de forma personal y segura.'}</p>
+  <button class="btn btn--gold" type="submit"><span>Aportar al siguiente ciclo</span>${arrow}</button>
+  <p class="form__note">${d.onceUrl || d.monthlyUrl ? `Pago seguro a través de ${esc(d.providerName || 'nuestra pasarela de pagos')}.` : 'Coordinamos tu aporte contigo por WhatsApp, de forma personal y segura. También puedes transferir directamente a la cuenta de la fundación.'}</p>
 </form>`;
 };
 
@@ -98,66 +162,24 @@ const home = () => ({
   path: '/',
   title: 'Dios Tras Las Rejas Colombia · Enviados a anunciar libertad',
   description: 'Acompañamos a mujeres privadas de la libertad en la Cárcel El Buen Pastor desde la fe, la formación y la preparación para volver a la vida en libertad. Lucas 4:18.',
-  bodyClass: 'is-home',
+  bodyClass: 'is-home is-dark-top',
   body: `
 <section class="hero" aria-labelledby="hero-h">
-  <div class="hero__grid">
-    <p class="hero__meta"><span>Fundación cristiana</span><span>Cárcel El Buen Pastor</span><span>Colombia</span></p>
-    <h1 id="hero-h" class="hero__h"><span class="l">Enviados</span><span class="l">a anunciar</span><em class="l">libertad</em></h1>
-    <div class="hero__txt">
-      <p>Acompañamos a mujeres privadas de la libertad desde la fe, la formación y la preparación para volver a la vida en libertad.</p>
-      <div class="hero__act">
-        <a class="btn" href="/nuestro-trabajo"><span>Conoce el camino</span>${arrow}</a>
-        ${more('/dona', 'Donar')}
-      </div>
-    </div>
-    <figure class="hero__img">
-      ${pic('oracion-acompanamiento', 'Dos mujeres de la fundación oran junto a una mujer sentada en una banca del patio de la cárcel El Buen Pastor.', { eager: true, sizes: '(min-width: 900px) 42vw, 100vw' })}
-      <figcaption>Un encuentro de oración en el patio · El Buen Pastor</figcaption>
-    </figure>
-    <p class="hero__verse">Lucas 4:18</p>
-  </div>
-</section>
-
-<section class="truth" aria-label="Una verdad">
-  <div class="wrap">
-    ${rh('01', 'Una verdad')}
-    <p class="truth__p" data-split>Una reja puede limitar un espacio <em>No puede encerrar a Dios, ni una historia, ni un nombre</em></p>
-  </div>
-</section>
-
-<section class="story" aria-labelledby="story-h">
-  <div class="wrap story__grid">
-    ${rh('02', 'Nuestra historia')}
-    <div class="story__head">
-      <h2 id="story-h" class="d2" data-reveal>Vamos donde la esperanza <em>necesita presencia</em></h2>
-      <figure class="story__detail" data-reveal>${pic('detalle-manos', 'Detalle de manos que sostienen hojas y una Biblia durante un encuentro.', { sizes: '(min-width: 900px) 22vw, 60vw' })}</figure>
-    </div>
-    <ol class="chapters">
-      <li data-line><h3>Quiénes somos</h3><p>Una fundación cristiana que acompaña a mujeres privadas de la libertad en la Cárcel El Buen Pastor.</p></li>
-      <li data-line><h3>Por qué existimos</h3><p>Porque fuimos enviados. No nacimos de una estrategia, sino de un llamado a ir donde la esperanza necesita hacerse presente.</p></li>
-      <li data-line><h3>Qué creemos</h3><p>Que la persona está antes que su condena. Que cada mujer tiene un nombre, una historia, capacidades, heridas, fe y futuro.</p></li>
-      <li data-line><h3>Qué significa acompañar</h3><p>Escuchar antes de hablar, leer la Palabra lado a lado, formar, orar y volver. La protagonista es ella y su proceso.</p></li>
-    </ol>
-    <div class="story__more">${more('/nuestra-historia', 'Nuestra historia completa')}</div>
-  </div>
-</section>
-
-<section class="place" aria-labelledby="place-h">
-  <div class="wrap">${rh('03', 'El Buen Pastor')}</div>
-  <figure class="place__film" data-reveal>
-    <video autoplay loop muted playsinline preload="metadata" poster="/assets/img/hero-poster.webp" data-ambient aria-hidden="true">
+  <div class="hero__media" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="metadata" poster="/assets/img/hero-poster.webp" data-ambient>
       <source src="/assets/video/hero.webm" type="video/webm"><source src="/assets/video/hero.mp4" type="video/mp4">
     </video>
-    <button class="place__play" type="button" data-video-open><span>Ver el video</span>${arrow}</button>
-  </figure>
-  <div class="wrap place__grid">
-    <h2 id="place-h" class="d2" data-reveal>El lugar donde <em>ocurre el encuentro</em></h2>
-    <div class="place__txt" data-reveal>
-      <p>Corredores, patios, muros y bancas. No mostramos la cárcel para impresionar. La mostramos porque es el lugar donde nos encontramos con cada mujer.</p>
-      <p>Aquí la arquitectura limita el espacio. La presencia, no.</p>
+  </div>
+  <div class="wrap hero__in">
+    ${kicker('Fundación cristiana · Cárcel El Buen Pastor · Colombia', 'k--light hero__k')}
+    <h1 id="hero-h" class="t t--hero"><span class="t__s">Enviados a anunciar</span><span class="t__c">Libertad</span></h1>
+    <p class="hero__lead">Acompañamos a mujeres privadas de la libertad desde la fe, la formación y la preparación para volver a la vida en libertad.</p>
+    <div class="hero__act">
+      ${btn('/dona', 'Donar', 'btn--gold')}
+      <button class="btn btn--line" type="button" data-video-open>${play}<span>Ver el video</span></button>
     </div>
   </div>
+  <p class="hero__verse">Lucas 4:18</p>
 </section>
 
 <div class="modal" hidden data-video-modal role="dialog" aria-modal="true" aria-label="Video: corredor de la cárcel El Buen Pastor">
@@ -168,39 +190,44 @@ const home = () => ({
   </div>
 </div>
 
-<section class="work" aria-labelledby="work-h">
+<section class="truth" aria-label="Una verdad">
   <div class="wrap">
-    ${rh('04', 'Nuestro trabajo')}
-    <div class="work__head">
-      <h2 id="work-h" class="d2" data-reveal>Cinco programas <em>Un solo camino</em></h2>
-      <p class="lede" data-reveal>Cada programa es un tramo del mismo recorrido. Nadie avanza sola y nadie avanza igual.</p>
-    </div>
-    ${chain()}
-    ${pathRows()}
+    <p class="truth__p" data-split><span class="t__s">Una reja puede limitar un espacio</span><span class="t__c">No puede encerrar a Dios, ni una historia, ni un nombre</span></p>
   </div>
 </section>
 
-<section class="stories" aria-labelledby="stories-h">
-  <div class="wrap stories__grid">
-    ${rh('05', 'Historias')}
-    <figure class="stories__img" data-reveal>
-      ${pic('yo-soy-testimonio', 'Tres mujeres de la fundación sonríen con prendas de la campaña “Yo soy testimonio”, con la ciudad al fondo.', { sizes: '(min-width: 900px) 45vw, 100vw' })}
-      <figcaption>Campaña “Yo soy testimonio”</figcaption>
-    </figure>
-    <div class="stories__txt">
-      <h2 id="stories-h" class="d2" data-reveal>Escuchar antes <em>de contar</em></h2>
-      <p class="lede" data-reveal>Contamos historias porque escucharlas nos cambió la mirada. Cada una se publica con el consentimiento de su protagonista y a su propio ritmo.</p>
-      <ol class="steps" data-reveal><li>Escuchar</li><li>Conocer</li><li>Reconocer</li><li>Acompañar</li></ol>
-      ${more('/historias', 'Leer historias')}
-    </div>
+<section class="who" aria-labelledby="who-h">
+  <figure class="who__img" data-reveal>${pic('capilla', 'Cientos de mujeres reunidas en la capilla de El Buen Pastor durante una jornada de la fundación.', { sizes: '(min-width: 900px) 55vw, 100vw' })}</figure>
+  <div class="who__txt">
+    ${kicker('Quiénes somos')}
+    ${T('Vamos donde la esperanza', 'Necesita presencia', { id: 'who-h' })}
+    <p class="lede" data-reveal>Dios Tras Las Rejas nació de un encuentro. Lina y Liliana llegaron a El Buen Pastor y se encontraron con mujeres cuyas historias iban mucho más allá de una condena.</p>
+    <blockquote class="quote" data-reveal><p>“${founders.lina}”</p><footer>Lina, cofundadora</footer></blockquote>
+    ${btn('/nuestra-historia', 'Nuestra historia', '')}
   </div>
 </section>
+
+<section class="work" aria-labelledby="work-h">
+  <div class="wrap work__head">
+    ${kicker('Nuestro trabajo', 'k--light')}
+    ${T('Cinco programas,', 'Un solo camino', { id: 'work-h' })}
+    ${chain(true)}
+  </div>
+  ${programStrip()}
+  <div class="wrap work__foot">
+    <p data-reveal>${cycles.long}</p>
+    ${more('/nuestro-trabajo', 'Ver todo nuestro trabajo')}
+  </div>
+</section>
+
+${milestonesBlock()}
 
 <section class="free" aria-labelledby="free-h">
+  <div class="free__media" aria-hidden="true">${pic('muro-cielo', '', { sizes: '100vw' })}</div>
   <div class="free__word" aria-hidden="true"><span data-drift>Libertad</span></div>
-  <div class="wrap free__grid">
-    ${rh('06', 'Libertad', 'rh--light')}
-    <h2 id="free-h" class="free__q" data-split>¿Qué significa <em>realmente ser libre?</em></h2>
+  <div class="wrap free__in">
+    ${kicker('Libertad', 'k--light')}
+    ${T('¿Qué significa', 'Realmente ser libre?', { id: 'free-h' })}
     <ol class="free__list">
       <li data-line><span>i</span>Libre de la culpa que repite el peor día</li>
       <li data-line><span>ii</span>Libre del miedo a lo que viene</li>
@@ -208,54 +235,61 @@ const home = () => ({
       <li data-line><span>iv</span>Libre para reconstruir lo que se rompió</li>
       <li data-line><span>v</span>Libre para volver a casa con un propósito</li>
     </ol>
-    <figure class="free__img" data-reveal>${pic('muro-cielo', 'Muro de la cárcel bajo un cielo abierto, en blanco y negro.', { sizes: '(min-width: 900px) 40vw, 100vw' })}</figure>
-    <div class="free__close" data-reveal>
-      <p>Hay una libertad que empieza adentro, mucho antes de que se abra la puerta. Y hay otra que necesita un camino para llegar afuera. <em>Acompañamos las dos.</em></p>
-      ${more('/programas/regreso-a-la-libertad', 'Regreso a la libertad')}
+    <p class="free__close" data-reveal>La libertad puede comenzar mucho antes de que una puerta se abra. Y también necesita un camino para llegar afuera. <em>Acompañamos las dos.</em></p>
+    ${btn('/programas/regreso-a-la-libertad', 'Regreso a la libertad', 'btn--line')}
+  </div>
+</section>
+
+<section class="voices" aria-labelledby="voices-h">
+  <div class="wrap voices__grid">
+    <figure class="voices__img" data-reveal>${pic('yo-soy-testimonio', 'Mujeres de la fundación con prendas de la campaña “Yo soy testimonio”, con la ciudad al fondo.', { sizes: '(min-width: 900px) 42vw, 100vw' })}</figure>
+    <div class="voices__txt">
+      ${kicker('Historias')}
+      ${T('Escuchar antes', 'De contar', { id: 'voices-h' })}
+      <p class="lede" data-reveal>Contamos historias porque escucharlas nos cambió la mirada. Cada una se publica con el consentimiento de su protagonista y a su propio ritmo.</p>
+      <ol class="steps" data-reveal><li>Escuchar</li><li>Conocer</li><li>Reconocer</li><li>Acompañar</li></ol>
+      <blockquote class="quote" data-reveal><p>“${founders.liliana}”</p><footer>Liliana, cofundadora</footer></blockquote>
+      ${more('/historias', 'Leer historias')}
     </div>
   </div>
 </section>
 
-${verseMap('07')}
+${verseMap()}
 
 <section class="join" aria-labelledby="join-h">
   <div class="wrap join__grid">
-    ${rh('08', 'Participa')}
-    <h2 id="join-h" class="d2" data-reveal>Hay muchas maneras <em>de ser enviado</em></h2>
-    <p class="lede join__lede" data-reveal>Nadie acompaña solo. Detrás de cada encuentro hay personas que oran, que dan, que enseñan un oficio o que abren una puerta afuera.</p>
-    <ul class="index">
-      ${ways.map((w, i) => `<li data-line><a href="${w.href || `/participa#${w.id}`}"><span class="index__n">${String(i + 1).padStart(2, '0')}</span><span class="index__t">${w.t}</span><span class="index__d">${w.d}</span>${arrow}</a></li>`).join('')}
-    </ul>
+    <div class="join__head">
+      ${kicker('Participa')}
+      ${T('Hay muchas maneras', 'De ser enviado', { id: 'join-h' })}
+      <p class="lede" data-reveal>Nadie acompaña solo. Detrás de cada encuentro hay personas que oran, que dan, que enseñan un oficio o que abren una puerta afuera.</p>
+      <figure class="join__img" data-reveal>${pic('taller-costura', 'Mujeres en un taller productivo muestran las piezas que están elaborando.', { sizes: '(min-width: 900px) 36vw, 100vw' })}</figure>
+    </div>
+    ${waysIndex()}
   </div>
 </section>
 
-<section class="donate" aria-labelledby="donate-h">
-  <div class="wrap donate__grid">
-    ${rh('09', 'Donar')}
-    <div class="donate__txt">
-      <h2 id="donate-h" class="d2" data-reveal>Tu aporte no rescata a nadie <em>Hace posible estar ahí</em></h2>
+<section class="give-sec" aria-labelledby="give-h">
+  <div class="wrap give-sec__grid">
+    <div class="give-sec__txt">
+      ${kicker('Donar', 'k--light')}
+      ${T('Tu aporte no rescata a nadie', 'Hace posible estar ahí', { id: 'give-h' })}
       <ul class="plain" data-reveal>
         <li>Encuentros de acompañamiento y discipulado</li>
         <li>Materiales de formación</li>
         <li>Insumos para los talleres productivos</li>
         <li>Acompañamiento en el regreso a la libertad</li>
       </ul>
-      <p class="small" data-reveal>Publicamos nuestra información institucional en <a href="/transparencia">Transparencia</a>.</p>
+      <p class="small" data-reveal>${cycles.long}</p>
     </div>
-    <div data-reveal>${donateForm()}</div>
+    <div class="give-sec__form" data-reveal>
+      ${donateForm()}
+      <div class="give-sec__bank"><p class="k k--light">O transfiere directamente</p>${bankLine()}</div>
+    </div>
   </div>
 </section>
 
-<section class="end" aria-labelledby="end-h">
-  <div class="wrap">
-    ${rh('10', 'La historia continúa')}
-    <h2 id="end-h" class="end__h" data-split>¿Cuál puede ser <em>tu lugar</em> en esta historia?</h2>
-    <div class="end__act" data-reveal>
-      <a class="btn" href="/participa"><span>Encuentra tu lugar</span>${arrow}</a>
-      ${more(waLink('Hola, quiero conocer más sobre Dios Tras Las Rejas Colombia.'), 'Conversemos por WhatsApp', true)}
-    </div>
-  </div>
-</section>`,
+${closer({ serif: 'La historia continúa', caps: '¿Cuál es tu lugar en ella?', img: 'oracion-noche', alt: 'Una mujer de la fundación ora de rodillas junto a otra mujer, de noche.', pos: '50% 55%', primary: ['Encuentra tu lugar', '/participa'], secondary: ['Conversemos', waLink('Hola, quiero conocer más sobre Dios Tras Las Rejas Colombia.')] })}`,
+  preload: null,
 });
 
 // ───────────────────────── Nuestra historia ─────────────────────────
@@ -263,20 +297,37 @@ ${verseMap('07')}
 const historia = () => ({
   path: '/nuestra-historia',
   title: 'Nuestra historia',
-  description: 'Por qué existe Dios Tras Las Rejas Colombia: un envío a acompañar a mujeres privadas de la libertad desde la fe, la dignidad y la esperanza.',
+  description: 'Dios Tras Las Rejas nació de un encuentro: Lina y Liliana llegaron a El Buen Pastor y descubrieron mujeres cuyas historias iban mucho más allá de una condena.',
   crumbs: [['Nuestra historia', '/nuestra-historia']],
+  preload: 'encuentro-ancho',
   body: `
-${opener({ n: '—', label: 'Nuestra historia', title: 'No nacimos de una idea <em>Nacimos de un envío</em>', lead: 'Dios Tras Las Rejas Colombia existe porque alguien escuchó un llamado a entrar donde pocos entran y a quedarse el tiempo suficiente.', img: 'encuentro-ancho', alt: 'Dos mujeres de la fundación acompañan en oración a una mujer en el patio de la cárcel.' })}
-<section class="wrap longform">
-  <aside class="longform__side">${rh('01', 'Cómo empezó')}</aside>
-  <div class="longform__body" data-reveal><p>${tbd('[CONTENIDO POR DEFINIR: año de inicio, fundadoras y fundadores, primera visita a El Buen Pastor y cómo se formó el equipo]')}</p></div>
-  <aside class="longform__side">${rh('02', 'Lo que creemos')}</aside>
-  <div class="longform__body" data-reveal>
-    <p class="big">Creemos que Dios no se quedó afuera de la cárcel</p>
-    <p>Creemos que una mujer es mucho más que la sentencia que la trajo aquí: tiene un nombre, una historia, heridas, fe, capacidades y un futuro. Creemos que la libertad empieza adentro y que también necesita un camino para llegar afuera.</p>
+${cover({ kicker: 'Nuestra historia', serif: 'Una historia que comenzó', caps: 'Detrás de unas rejas', lead: 'Dios Tras Las Rejas nació de un encuentro.', img: 'encuentro-ancho', alt: 'Dos mujeres de la fundación acompañan en oración a una mujer en el patio de la cárcel.' })}
+<article class="wrap tale-o">
+  <div class="tale-o__body">
+    <p class="dropcap">Lina y Liliana llegaron a El Buen Pastor y se encontraron con mujeres cuyas historias iban mucho más allá de una condena. Escucharon, conocieron sus vidas y descubrieron una comunidad llena de preguntas, capacidades, heridas, sueños, fe y ganas de seguir adelante.</p>
+    <p class="big">Y se enamoraron de ellas.</p>
+    <p>No de una idea sobre ellas. De conocerlas. De escucharlas. De compartir con ellas. De descubrir todo lo que existe detrás de una historia que muchas veces la sociedad reduce a una palabra: <em>presa</em>.</p>
   </div>
-  <aside class="longform__side">${rh('03', 'Cómo actuamos')}</aside>
-  <ol class="longform__body principles" data-reveal>
+  <blockquote class="pull" data-reveal><p>“${founders.lina}”</p><footer><span>Lina</span>Para Lina, aquel encuentro cambió la manera de mirar</footer></blockquote>
+  <figure class="tale-o__img" data-reveal>${pic('oracion-acompanamiento', 'Dos mujeres de la fundación oran junto a una mujer sentada en una banca del patio.', { sizes: '(min-width: 900px) 40vw, 100vw' })}</figure>
+  <blockquote class="pull pull--r" data-reveal><p>“${founders.liliana}”</p><footer><span>Liliana</span>Liliana lo vivió como una invitación a permanecer</footer></blockquote>
+  <div class="tale-o__body">
+    <p>Así comenzó a tomar forma Dios Tras Las Rejas. Una obra que entiende que la libertad puede comenzar mucho antes de que una puerta se abra: cuando una mujer vuelve a reconocer su identidad, descubre propósito, recupera capacidades, fortalece sus vínculos y empieza a imaginar nuevamente su futuro.</p>
+    <p>Desde entonces, el trabajo ha crecido alrededor de una convicción: <strong>estar presentes</strong>. Acompañar. Escuchar. Formar. Restaurar. Caminar juntas.</p>
+    <p class="big">Porque detrás de las rejas sigue habiendo vida. Y allí también está Dios.</p>
+  </div>
+</article>
+<section class="arc">
+  <div class="wrap">
+    ${kicker('Cómo creció')}
+    <ol class="arc__list">${['Encuentro', 'Vínculo', 'Misión', 'Acción', 'Transformación'].map((w, i) => `<li data-reveal><span>${String(i + 1).padStart(2, '0')}</span>${w}</li>`).join('')}</ol>
+    <p class="lede" data-reveal>Con el tiempo, el trabajo fue creciendo y también las necesidades que encontraron en el camino. La misión empezó a traducirse en acciones concretas dentro de El Buen Pastor.</p>
+  </div>
+</section>
+${milestonesBlock()}
+<section class="wrap principles-s">
+  ${kicker('Cómo actuamos')}
+  <ol class="principles">
     <li data-line><strong>Acompañamos, no rescatamos</strong><span>La protagonista es ella y su proceso</span></li>
     <li data-line><strong>Escuchamos antes de hablar</strong><span>Y volvemos, aunque sea difícil</span></li>
     <li data-line><strong>Formamos para la vida</strong><span>No solo para el día de hoy</span></li>
@@ -285,20 +336,23 @@ ${opener({ n: '—', label: 'Nuestra historia', title: 'No nacimos de una idea <
   </ol>
 </section>
 <section class="manifesto" aria-labelledby="man-h">
-  <div class="wrap manifesto__grid">
-    ${rh('04', 'Manifiesto', 'rh--light')}
+  <div class="wrap manifesto__in">
+    ${kicker('Manifiesto', 'k--light')}
     <h2 id="man-h" class="sr">Manifiesto</h2>
     <div class="manifesto__txt">
       <p data-reveal>Hay lugares donde el tiempo se mide en días que no pasan. Donde una mujer deja de ser llamada por su nombre y empieza a ser llamada por su número, su delito, su pabellón.</p>
       <p data-reveal class="solo">Nosotros creemos otra cosa.</p>
       <p data-reveal>Creemos que Dios no se quedó en la puerta. Que ninguna reja es tan estrecha como para impedir la presencia, ni tan alta como para tapar el cielo. Creemos que la persona está antes que su condena, y que su historia no se detuvo el día de la sentencia.</p>
       <p data-reveal>Por eso vamos. No a rescatar, sino a acompañar. A sentarnos en la misma banca. A leer, lado a lado, una buena noticia. A enseñar un oficio. A orar cuando no hay palabras. A preparar el día en que la puerta se abra.</p>
-      <p data-reveal>Para nosotros, libertad es dejar de cargar la culpa que no deja avanzar, volver a mirarse con dignidad, reconstruir lo que se rompió y regresar a casa con un propósito.</p>
       <p data-reveal class="solo">Fuimos enviados a anunciar libertad. <em>Y en este camino cabe más gente de la que imaginas.</em></p>
     </div>
   </div>
 </section>
-${closer('La historia sigue <em>escribiéndose</em>')}`,
+<section class="wrap allies">
+  ${kicker('Aliados')}
+  <ul>${allies.map((a) => `<li data-line><a href="${a.url}" target="_blank" rel="noopener"><strong>${a.name}</strong><span>${a.note}</span>${arrow}</a></li>`).join('')}</ul>
+</section>
+${closer({ serif: 'La historia sigue', caps: 'Escribiéndose', img: 'capilla', alt: 'Mujeres reunidas en la capilla de El Buen Pastor.' })}`,
 });
 
 // ───────────────────────── Nuestro trabajo / Programas ─────────────────────────
@@ -306,17 +360,20 @@ ${closer('La historia sigue <em>escribiéndose</em>')}`,
 const trabajo = () => ({
   path: '/nuestro-trabajo',
   title: 'Nuestro trabajo',
-  description: 'Un camino de acompañamiento en cinco tramos: fe, identidad, acompañamiento, propósito y libertad. Así acompañamos a mujeres en la Cárcel El Buen Pastor.',
+  description: 'Cinco programas, un solo camino, y acciones concretas como la transformación del Patio 2 y los reencuentros familiares en El Buen Pastor.',
   crumbs: [['Nuestro trabajo', '/nuestro-trabajo']],
+  preload: 'taller-costura',
   body: `
-${opener({ n: '—', label: 'Nuestro trabajo', title: 'Un camino <em>no un evento</em>', lead: 'Acompañar no es visitar una vez. Es caminar con cada mujer desde el primer encuentro hasta el día en que vuelve a casa, y un poco más allá.', img: 'patio-panoramica', alt: 'Mujeres juegan fútbol en el patio de la cárcel El Buen Pastor, rodeado de pabellones.' })}
-<section class="work work--page"><div class="wrap">
-  ${rh('01', 'El recorrido')}
+${cover({ kicker: 'Nuestro trabajo', serif: 'Un camino,', caps: 'No un evento', lead: 'Acompañar no es visitar una vez. Es caminar con cada mujer desde el primer encuentro hasta el día en que vuelve a casa, y un poco más allá.', img: 'taller-costura', alt: 'Mujeres en un taller productivo muestran las piezas que están elaborando.' })}
+<section class="wrap programs-s">
+  ${kicker('El recorrido')}
   ${chain()}
   ${pathRows()}
-</div></section>
-${verseMap('02', 'Lucas 4:18 como mapa')}
-${closer('Cada tramo <em>necesita manos</em>', ['Haz parte', '/participa'])}`,
+  <p class="cycles" data-reveal><strong>${cycles.short}.</strong> ${cycles.long}</p>
+</section>
+${milestonesBlock()}
+${verseMap()}
+${closer({ serif: 'Cada tramo', caps: 'Necesita manos', img: 'taller-producto', alt: 'Pantuflas y prendas elaboradas en los talleres productivos.', primary: ['Haz parte', '/participa'], secondary: ['Donar', '/dona'] })}`,
 });
 
 const programasIndex = () => ({
@@ -324,81 +381,75 @@ const programasIndex = () => ({
   title: 'Programas',
   description: 'Nacer de Nuevo, La verdad de ser mujer, Discipulado uno a uno, Talleres productivos y Regreso a la libertad: los programas de Dios Tras Las Rejas Colombia.',
   crumbs: [['Programas', '/programas']],
+  preload: 'capilla',
   body: `
-${opener({ n: '—', label: 'Programas', title: 'Cinco programas <em>una misma dirección</em>', lead: 'Del primer encuentro con una buena noticia al día de la salida. Cada programa prepara el siguiente paso.' })}
-<section class="work work--page"><div class="wrap">${chain()}${pathRows()}</div></section>
-${closer('¿Quieres acompañar <em>uno de estos programas?</em>', ['Haz parte', '/participa'], ['Escríbenos', '/contacto'])}`,
+${cover({ kicker: 'Programas', serif: 'Cinco programas,', caps: 'Una misma dirección', lead: 'Del primer encuentro con una buena noticia al día de la salida. Cada programa prepara el siguiente paso.', img: 'capilla', alt: 'Mujeres reunidas en la capilla de El Buen Pastor.', short: true })}
+<section class="wrap programs-s">${chain()}${pathRows()}<p class="cycles" data-reveal><strong>${cycles.short}.</strong> ${cycles.long}</p></section>
+${closer({ serif: '¿Quieres acompañar', caps: 'Uno de estos programas?', primary: ['Haz parte', '/participa'], secondary: ['Escríbenos', '/contacto'] })}`,
 });
 
 const facts = (p) => `
 <dl class="facts">
   <div data-line><dt>Principio</dt><dd>${p.principle}</dd></div>
   <div data-line><dt>Lucas 4:18</dt><dd>${p.word}</dd></div>
-  <div data-line><dt>Frecuencia</dt><dd>${tbd()}</dd></div>
-  <div data-line><dt>Duración</dt><dd>${tbd()}</dd></div>
-  <div data-line><dt>Quiénes acompañan</dt><dd>${tbd()}</dd></div>
+  <div data-line><dt>Cómo se activa</dt><dd>${cycles.short}</dd></div>
+  <div data-line><dt>Qué lo hace posible</dt><dd>Donantes, voluntariado, iglesias y aliados que sostienen cada ciclo</dd></div>
 </dl>`;
-
 const seeks = (p) => `<ol class="seeks">${p.seeks.map((s, i) => `<li data-line><span>${String(i + 1).padStart(2, '0')}</span>${s}</li>`).join('')}</ol>`;
+const cols = (p, a = '01', b = '02') => `
+<div class="wrap pg-cols">
+  <div>${kicker(`${a} · Qué es`)}<p class="lede" data-reveal>${p.what}</p></div>
+  <div>${kicker(`${b} · Qué buscamos`)}${seeks(p)}</div>
+</div>`;
 
-// Cuerpo específico por programa: cinco composiciones distintas en el mismo sistema.
 const programBody = {
   anuncio: (p) => `
-<section class="pg-anuncio">
+<section class="pg">
   <div class="wrap"><p class="pg-s" data-split>${p.statement}</p></div>
   <figure class="bleed" data-reveal>${pic(p.img, p.alt)}</figure>
-  <div class="wrap pg-cols">
-    <div>${rh('01', 'Qué es')}<p class="lede" data-reveal>${p.what}</p></div>
-    <div>${rh('02', 'Qué buscamos')}${seeks(p)}</div>
-  </div>
+  ${cols(p)}
 </section>`,
   identidad: (p) => `
-<section class="pg-identidad">
-  <div class="wrap pg-identidad__grid">
-    <div>${rh('01', 'Lo que una mujer es')}<p class="pg-s" data-reveal>${p.statement}</p></div>
+<section class="pg">
+  <div class="wrap pg-identidad">
+    <div>${kicker('01 · Lo que una mujer es')}<p class="pg-s pg-s--m" data-reveal>${p.statement}</p>
+      <figure class="pg-identidad__img" data-reveal>${pic(p.img, p.alt, { sizes: '(min-width: 900px) 36vw, 100vw' })}</figure></div>
     <ul class="words" aria-label="Lo que define a una mujer más allá de su condena">${p.words.map((w) => `<li data-line>${w}</li>`).join('')}</ul>
   </div>
-  <figure class="wrap inset" data-reveal>${pic(p.img, p.alt, { sizes: '(min-width: 900px) 80vw, 100vw' })}</figure>
-  <div class="wrap pg-cols">
-    <div>${rh('02', 'Qué es')}<p class="lede" data-reveal>${p.what}</p></div>
-    <div>${rh('03', 'Qué buscamos')}${seeks(p)}</div>
-  </div>
+  ${cols(p, '02', '03')}
 </section>`,
   encuentro: (p) => `
-<section class="pg-encuentro">
-  <div class="wrap pg-encuentro__grid">
+<section class="pg">
+  <div class="wrap pg-encuentro">
     <figure class="pg-encuentro__img" data-reveal>${pic(p.img, p.alt, { sizes: '(min-width: 900px) 45vw, 100vw' })}</figure>
     <div class="pg-encuentro__txt">
-      ${rh('01', 'Uno a uno')}
-      <p class="pg-s" data-reveal>${p.statement}</p>
+      ${kicker('01 · Uno a uno')}
+      <p class="pg-s pg-s--m" data-reveal>${p.statement}</p>
       <p class="lede dropcap" data-reveal>${p.what}</p>
       <figure class="pg-encuentro__detail" data-reveal>${pic(p.detail, p.detailAlt, { sizes: '(min-width: 900px) 20vw, 50vw' })}</figure>
-      ${rh('02', 'Qué buscamos')}${seeks(p)}
+      ${kicker('02 · Qué buscamos')}${seeks(p)}
     </div>
   </div>
 </section>`,
   oficio: (p) => `
-<section class="pg-oficio">
+<section class="pg">
   <div class="wrap">
     <p class="pg-s" data-split>${p.statement}</p>
     <ol class="craft">${p.steps.map(([t, d], i) => `<li data-line><span class="craft__n">${String(i + 1).padStart(2, '0')}</span><strong>${t}</strong><span>${d}</span></li>`).join('')}</ol>
   </div>
-  <div class="wrap pg-cols">
-    <div>${rh('01', 'Qué es')}<p class="lede" data-reveal>${p.what}</p>${frame('Fotografía por definir · manos en un taller')}</div>
-    <div>${rh('02', 'Qué buscamos')}${seeks(p)}</div>
+  <div class="wrap pg-oficio">
+    <figure data-reveal>${pic(p.img, p.alt, { sizes: '(min-width: 900px) 50vw, 100vw' })}<figcaption>Piezas elaboradas en los talleres</figcaption></figure>
+    <div>${kicker('01 · Qué es')}<p class="lede" data-reveal>${p.what}</p>${kicker('02 · Qué buscamos')}${seeks(p)}</div>
   </div>
 </section>`,
   regreso: (p) => `
-<section class="pg-regreso">
+<section class="pg">
   <div class="wrap">
     <p class="pg-s" data-split>${p.statement}</p>
     <ol class="stations">${p.stations.map(([t, d], i) => `<li data-reveal><span class="stations__n">${String(i + 1).padStart(2, '0')}</span><strong>${t}</strong><span>${d}</span></li>`).join('')}</ol>
   </div>
   <figure class="bleed" data-reveal>${pic(p.img, p.alt)}</figure>
-  <div class="wrap pg-cols">
-    <div>${rh('01', 'Qué es')}<p class="lede" data-reveal>${p.what}</p></div>
-    <div>${rh('02', 'Qué buscamos')}${seeks(p)}</div>
-  </div>
+  ${cols(p)}
 </section>`,
 };
 
@@ -409,14 +460,16 @@ const programa = (p, i) => {
     title: p.name,
     description: `${p.name}: ${p.short}. Programa de Dios Tras Las Rejas Colombia con mujeres privadas de la libertad en la Cárcel El Buen Pastor.`,
     crumbs: [['Programas', '/programas'], [p.name, `/programas/${p.slug}`]],
+    preload: p.hero,
     body: `
-${opener({ n: p.n, label: `Programa · ${p.principle}`, title: p.name, lead: p.lead, variant: `opener--${p.layout}` })}
+${cover({ kicker: `Programa ${p.n} · ${p.word}`, serif: p.principle, caps: p.name, lead: p.lead, img: p.hero, alt: p.heroAlt, pos: p.heroPos })}
 ${programBody[p.layout](p)}
-<section class="wrap pg-facts">${rh('—', 'Cómo se vive')}${facts(p)}</section>
-<nav class="nextp" aria-label="Siguiente programa"><a class="wrap" href="/programas/${next.slug}">
-  <span class="nextp__l">Siguiente tramo · ${next.n}</span><span class="nextp__t">${next.name}</span>${arrow}
+<section class="wrap pg-facts">${kicker('Cómo se vive')}${facts(p)}</section>
+<nav class="nextp" aria-label="Siguiente programa"><a href="/programas/${next.slug}">
+  <span class="nextp__media">${pic(next.hero, '', { sizes: '100vw', pos: next.heroPos })}</span>
+  <span class="wrap nextp__in"><span class="k k--light">Siguiente tramo · ${next.n}</span><span class="nextp__t">${next.name}</span>${arrow}</span>
 </a></nav>
-${closer(`${p.name} es posible <em>porque alguien decide estar</em>`, ['Haz parte', '/participa'])}`,
+${closer({ serif: `${p.name} es posible`, caps: 'Porque alguien decide estar', primary: ['Donar', '/dona'], secondary: ['Haz parte', '/participa'] })}`,
   };
 };
 
@@ -429,15 +482,14 @@ const historias = () => ({
   title: 'Historias',
   description: 'Historias de mujeres que caminan procesos de fe, identidad y libertad, contadas con su consentimiento y a su propio ritmo.',
   crumbs: [['Historias', '/historias']],
+  preload: 'oracion-noche',
   body: `
-${opener({ n: '—', label: 'Historias', title: 'Escuchar, conocer <em>reconocer, acompañar</em>', lead: 'No contamos historias para mostrar lo que hicimos. Las contamos porque cada una nos enseñó a mirar a la persona antes que a su situación.' })}
+${cover({ kicker: 'Historias', serif: 'Escuchar, conocer,', caps: 'Reconocer, acompañar', lead: 'No contamos historias para mostrar lo que hicimos. Las contamos porque cada una nos enseñó a mirar a la persona antes que a su situación.', img: 'oracion-noche', alt: 'Una mujer de la fundación ora de rodillas junto a otra mujer, de noche.', pos: '50% 40%' })}
 <section class="wrap archive">
-  ${rh('01', 'Archivo')}
+  ${kicker('Archivo')}
   ${
     published.length
-      ? `<ol class="archive__list">${published
-          .map((s) => `<li data-line><a href="/historias/${s.slug}"><figure>${pic(s.img, s.alt, { sizes: '(min-width: 900px) 30vw, 100vw' })}</figure><span class="archive__name">${esc(s.name)}</span><span class="archive__q">“${esc(s.quote)}”</span></a></li>`)
-          .join('')}</ol>`
+      ? `<ol class="archive__list">${published.map((s) => `<li><a href="/historias/${s.slug}"><figure>${pic(s.img, s.alt, { sizes: '(min-width: 900px) 30vw, 100vw' })}</figure><span class="archive__name">${esc(s.name)}</span><span class="archive__q">“${esc(s.quote)}”</span></a></li>`).join('')}</ol>`
       : `<div class="archive__empty">
     <figure data-reveal>${frame('Primera historia · por publicar')}</figure>
     <div data-reveal>
@@ -447,11 +499,11 @@ ${opener({ n: '—', label: 'Historias', title: 'Escuchar, conocer <em>reconocer
   </div>`
   }
 </section>
-<section class="campaign">
-  <div class="wrap campaign__grid">
-    <figure data-reveal>${pic('yo-soy-testimonio', 'Tres mujeres de la fundación con prendas de la campaña “Yo soy testimonio”.', { sizes: '(min-width: 900px) 40vw, 100vw' })}<figcaption>Campaña “Yo soy testimonio”</figcaption></figure>
-    <div>
-      ${rh('02', 'Cómo contamos')}
+<section class="voices voices--alt">
+  <div class="wrap voices__grid">
+    <figure class="voices__img" data-reveal>${pic('yo-soy-testimonio', 'Mujeres de la fundación con prendas de la campaña “Yo soy testimonio”.', { sizes: '(min-width: 900px) 42vw, 100vw' })}<figcaption>Campaña “Yo soy testimonio”</figcaption></figure>
+    <div class="voices__txt">
+      ${kicker('Cómo contamos')}
       <ol class="seeks">
         <li data-line><span>01</span>Escuchamos la historia completa antes de contar una parte</li>
         <li data-line><span>02</span>Ella decide qué se cuenta, cómo y cuándo</li>
@@ -461,10 +513,9 @@ ${opener({ n: '—', label: 'Historias', title: 'Escuchar, conocer <em>reconocer
     </div>
   </div>
 </section>
-${closer('¿Tu historia <em>pasó por aquí?</em>', ['Compartir mi historia', '/contacto'], ['WhatsApp', waLink('Hola, caminé con Dios Tras Las Rejas y quiero compartir mi historia.')])}`,
+${closer({ serif: '¿Tu historia', caps: 'Pasó por aquí?', primary: ['Compártela con nosotras', waLink('Hola, caminé con Dios Tras Las Rejas y quiero compartir mi historia.')], secondary: ['Contacto', '/contacto'] })}`,
 });
 
-// Plantilla de historia individual (fotografía, cita, narrativa, audio, video)
 const storyPage = (s, preview = false) => ({
   path: `/historias/${s.slug}`,
   title: s.name,
@@ -472,20 +523,16 @@ const storyPage = (s, preview = false) => ({
   noindex: preview,
   crumbs: [['Historias', '/historias'], [s.name, `/historias/${s.slug}`]],
   body: `
-<article class="tale">
-  <header class="wrap tale__head">
-    ${rh('Historia', programs.find((p) => p.slug === s.program)?.name || 'Dios Tras Las Rejas')}
-    <h1 class="d1">${esc(s.name)}</h1>
-    <blockquote class="tale__q"><p>“${esc(s.quote)}”</p></blockquote>
-  </header>
-  <figure class="bleed">${s.img ? pic(s.img, s.alt, { eager: true }) : frame('Fotografía por definir')}</figure>
-  <div class="wrap tale__body">
+<article class="story-p">
+  ${cover({ kicker: `Historia · ${programs.find((p) => p.slug === s.program)?.name || 'Dios Tras Las Rejas'}`, serif: '', caps: esc(s.name), img: s.img, alt: s.alt })}
+  <div class="wrap story-p__body">
+    <blockquote class="pull"><p>“${esc(s.quote)}”</p></blockquote>
     ${s.body.map((b, i) => `<p${i === 0 ? ' class="dropcap"' : ''}>${esc(b)}</p>`).join('')}
-    ${s.audio ? `<figure class="tale__media"><figcaption>Escucha su voz</figcaption><audio controls preload="none" src="${esc(s.audio)}"></audio></figure>` : ''}
-    ${s.video ? `<figure class="tale__media"><video controls playsinline preload="none" src="${esc(s.video)}"></video></figure>` : ''}
+    ${s.audio ? `<figure class="media"><figcaption>Escucha su voz</figcaption><audio controls preload="none" src="${esc(s.audio)}"></audio></figure>` : ''}
+    ${s.video ? `<figure class="media"><video controls playsinline preload="none" src="${esc(s.video)}"></video></figure>` : ''}
   </div>
 </article>
-${closer('Su historia continúa <em>¿Cuál es tu lugar en ella?</em>')}`,
+${closer({ serif: 'Su historia continúa', caps: '¿Cuál es tu lugar en ella?', primary: ['Encuentra tu lugar', '/participa'], secondary: ['Donar', '/dona'] })}`,
 });
 const previewStory = storyPage(
   { slug: 'plantilla', name: 'Nombre o seudónimo', quote: TBD, program: 'regreso-a-la-libertad', img: null, body: [`${TBD} Esta es la plantilla de una historia individual: fotografía a sangre, cita en sus propias palabras, narrativa y, cuando existan, audio y video.`] },
@@ -499,8 +546,9 @@ const participa = () => ({
   title: 'Participa',
   description: 'Voluntariado, iglesias, empresas, organizaciones, profesionales y aliados: hay muchas maneras de ser parte del acompañamiento a mujeres privadas de la libertad.',
   crumbs: [['Participa', '/participa']],
+  preload: 'oracion-acompanamiento',
   body: `
-${opener({ n: '—', label: 'Participa', title: 'Hay muchas maneras <em>de ser enviado</em>', lead: 'No todos entran a la cárcel. Pero todos pueden hacer que alguien entre, que alguien aprenda, que alguien encuentre una puerta abierta al salir.' })}
+${cover({ kicker: 'Participa', serif: 'Hay muchas maneras', caps: 'De ser enviado', lead: 'No todos entran a la cárcel. Pero todos pueden hacer que alguien entre, que alguien aprenda, que alguien encuentre una puerta abierta al salir.', img: 'oracion-acompanamiento', alt: 'Dos mujeres de la fundación oran junto a una mujer en una banca del patio.', pos: '50% 45%' })}
 <section class="wrap paths">
   ${ways
     .map(
@@ -513,11 +561,22 @@ ${opener({ n: '—', label: 'Participa', title: 'Hay muchas maneras <em>de ser e
     )
     .join('')}
 </section>
+<section class="allies-s">
+  <div class="wrap allies-s__grid">
+    <figure data-reveal>${pic('encuentro-institucional', 'Mujeres de la fundación en un encuentro institucional.', { sizes: '(min-width: 900px) 34vw, 100vw' })}</figure>
+    <div>
+      ${kicker('Aliados')}
+      ${T('Lo que solos no podríamos', 'Lo hacemos juntos')}
+      <p class="lede" data-reveal>La transformación del Patio 2 se realizó junto a God Behind Bars. Así imaginamos cada alianza: una acción concreta que hace posible el encuentro.</p>
+      <ul class="allies">${allies.map((a) => `<li data-line><a href="${a.url}" target="_blank" rel="noopener"><strong>${a.name}</strong><span>${a.note}</span>${arrow}</a></li>`).join('')}</ul>
+    </div>
+  </div>
+</section>
 <section class="formsec" id="formulario" aria-labelledby="fp-h">
   <div class="wrap formsec__grid">
     <div>
-      ${rh('—', 'Da el primer paso')}
-      <h2 id="fp-h" class="d2" data-reveal>Cuéntanos <em>quién eres</em></h2>
+      ${kicker('Da el primer paso')}
+      ${T('Cuéntanos', 'Quién eres', { id: 'fp-h' })}
       <p class="lede" data-reveal>Te respondemos personalmente para conocerte y encontrar juntos el lugar donde tu aporte tiene más sentido.</p>
       <p class="small" data-reveal>El ingreso a un establecimiento penitenciario requiere procesos de autorización. Te acompañamos en ellos.</p>
     </div>
@@ -528,64 +587,64 @@ ${opener({ n: '—', label: 'Participa', title: 'Hay muchas maneras <em>de ser e
 
 // ───────────────────────── Dona ─────────────────────────
 
-const dona = () => {
-  const b = site.donate.bank;
-  const bankReady = b.bank && b.number;
-  return {
-    path: '/dona',
-    title: 'Donar',
-    description: 'Tu aporte hace posible el acompañamiento a mujeres privadas de la libertad: encuentros, formación, talleres y preparación para el regreso. Donación única o mensual.',
-    crumbs: [['Donar', '/dona']],
-    body: `
-<section class="donate donate--page">
-  <div class="wrap donate__grid">
-    ${rh('—', 'Donar')}
-    <div class="donate__txt">
-      <h1 class="d1" data-split>Hacer posible <em>que alguien esté ahí</em></h1>
+const dona = () => ({
+  path: '/dona',
+  title: 'Donar',
+  description: 'Tu aporte hace posible el siguiente ciclo de acompañamiento a mujeres privadas de la libertad. Donación única, mensual o transferencia a Davivienda.',
+  crumbs: [['Donar', '/dona']],
+  bodyClass: 'is-dark-top',
+  body: `
+<section class="give-sec give-sec--page">
+  <div class="wrap give-sec__grid">
+    <div class="give-sec__txt">
+      ${kicker('Donar', 'k--light')}
+      ${T('Hacer posible', 'Que alguien esté ahí', { tag: 'h1' })}
       <p class="lede" data-reveal>No te pedimos que salves a nadie. Te invitamos a sostener la presencia: el encuentro, el material de formación, el insumo del taller, el acompañamiento el día de la salida.</p>
-      <dl class="facts" data-reveal>
+      <dl class="facts facts--light" data-reveal>
         <div data-line><dt>Qué haces</dt><dd>Sostienes un acompañamiento continuo, que es lo que permite un proceso real</dd></div>
-        <div data-line><dt>Por qué importa</dt><dd>La transformación toma tiempo, y ninguna mujer debería caminarla sola</dd></div>
+        <div data-line><dt>Por qué importa</dt><dd>${cycles.long}</dd></div>
         <div data-line><dt>Cómo lo cuidamos</dt><dd>Publicamos nuestra información institucional en <a href="/transparencia">Transparencia</a></dd></div>
       </dl>
     </div>
-    <div class="donate__form" data-reveal>${donateForm()}</div>
+    <div class="give-sec__form" data-reveal>
+      ${donateForm()}
+      <div class="give-sec__bank"><p class="k k--light">Transferencia bancaria</p>${bankLine()}
+        ${more(waLink('Hola, hice una donación por transferencia a Dios Tras Las Rejas Colombia. Adjunto el comprobante.'), 'Enviar comprobante por WhatsApp')}</div>
+    </div>
   </div>
 </section>
 <section class="wrap paths">
-  ${rh('—', 'Otras formas de apoyar')}
-  <article class="paths__i" data-line><span class="paths__n">01</span><h2 class="paths__t">Transferencia bancaria</h2>
-    ${bankReady ? `<dl class="facts">${[['Banco', b.bank], ['Tipo de cuenta', b.type], ['Número', b.number], ['Titular', b.holder], ['NIT', b.nit]].filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : `<p>Solicita los datos bancarios oficiales por WhatsApp y te los enviamos directamente. ${tbd('[CONTENIDO POR DEFINIR: cuenta bancaria oficial]')}</p>`}
-    <div>${more(waLink('Hola, quiero donar por transferencia bancaria. ¿Me comparten los datos oficiales?'), 'Pedir datos y enviar comprobante', true)}</div></article>
-  <article class="paths__i" data-line><span class="paths__n">02</span><h2 class="paths__t">Aportes en especie</h2><p>Materiales para talleres, Biblias, útiles de formación. Escríbenos antes: te contamos qué se necesita en este momento y qué puede ingresar al establecimiento.</p>
-    <div>${more(waLink('Hola, quiero hacer un aporte en especie. ¿Qué necesitan en este momento?'), 'Consultar necesidades', true)}</div></article>
-  <article class="paths__i" data-line><span class="paths__n">03</span><h2 class="paths__t">Empresas e iglesias</h2><p>Aportes institucionales o el patrocinio de un programa o de un taller, con un acuerdo claro y un informe de lo que se hizo posible.</p>
+  ${kicker('Otras formas de apoyar')}
+  <article class="paths__i" data-line><span class="paths__n">01</span><h2 class="paths__t">Aportes en especie</h2><p>Materiales para talleres, Biblias, útiles de formación. Escríbenos antes: te contamos qué se necesita en este momento y qué puede ingresar al establecimiento.</p>
+    <div>${more(waLink('Hola, quiero hacer un aporte en especie. ¿Qué necesitan en este momento?'), 'Consultar necesidades')}</div></article>
+  <article class="paths__i" data-line><span class="paths__n">02</span><h2 class="paths__t">Empresas e iglesias</h2><p>Aportes institucionales o el patrocinio de un ciclo completo de un programa, con un acuerdo claro y un informe de lo que se hizo posible.</p>
     <div>${more('/participa#formulario', 'Hablemos')}</div></article>
+  <article class="paths__i" data-line><span class="paths__n">03</span><h2 class="paths__t">Proyectos de espacios</h2><p>Como la transformación del Patio 2: intervenciones concretas que crean lugares dignos para el encuentro de las mujeres con sus familias.</p>
+    <div>${more('/nuestro-trabajo#patio-2', 'Ver el Patio 2')}</div></article>
   <p class="small">Certificado de donación: ${tbd('[CONTENIDO POR DEFINIR: confirmar si la fundación emite certificados tributarios]')}</p>
 </section>`,
-  };
-};
+});
 
 // ───────────────────────── Contacto / Transparencia / 404 ─────────────────────────
 
 const contacto = () => ({
   path: '/contacto',
   title: 'Contacto',
-  description: 'Escríbenos por WhatsApp o por el formulario. Conversemos sobre cómo acompañar a mujeres privadas de la libertad con Dios Tras Las Rejas Colombia.',
+  description: 'Escríbenos por WhatsApp, por correo o por el formulario. Conversemos sobre cómo acompañar a mujeres privadas de la libertad con Dios Tras Las Rejas Colombia.',
   crumbs: [['Contacto', '/contacto']],
   body: `
 <section class="formsec formsec--page">
   <div class="wrap formsec__grid">
     <div>
-      ${rh('—', 'Contacto')}
-      <h1 class="d1" data-split>Conversemos</h1>
-      <p class="lede" data-reveal>Una pregunta, una idea, una historia, una alianza. Te respondemos personalmente.</p>
+      ${kicker('Contacto')}
+      ${T('Una pregunta, una idea,', 'Conversemos', { tag: 'h1' })}
+      <p class="lede" data-reveal>Una historia, una alianza. Te respondemos personalmente.</p>
       <dl class="facts" data-reveal>
         <div data-line><dt>WhatsApp</dt><dd><a href="${waLink('Hola, quiero comunicarme con Dios Tras Las Rejas Colombia.')}" target="_blank" rel="noopener">${site.whatsappDisplay}</a></dd></div>
-        <div data-line><dt>Correo</dt><dd>${site.email ? `<a href="mailto:${esc(site.email)}">${esc(site.email)}</a>` : tbd()}</dd></div>
+        <div data-line><dt>Correo</dt><dd>${site.emails.map((e) => `<a href="mailto:${esc(e)}">${esc(e)}</a>`).join('<br>')}</dd></div>
         <div data-line><dt>Redes</dt><dd>${Object.entries(site.social).filter(([, u]) => u).map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k[0].toUpperCase() + k.slice(1)}</a>`).join(' · ') || tbd()}</dd></div>
         <div data-line><dt>Dónde servimos</dt><dd>Cárcel El Buen Pastor, Colombia</dd></div>
-        <div data-line><dt>Razón social</dt><dd>${site.legalName}</dd></div>
+        <div data-line><dt>Razón social</dt><dd>${site.legalName} · NIT ${esc(bank.nit)}</dd></div>
       </dl>
     </div>
     ${form('contacto', 'Contacto desde la web', [...baseFields, { name: 'asunto', label: 'Asunto', options: ['Quiero donar', 'Quiero participar', 'Alianza o empresa', 'Iglesia', 'Prensa', 'Otro'] }, { name: 'mensaje', label: 'Mensaje', rows: 4 }], 'Enviar mensaje')}
@@ -596,34 +655,37 @@ const contacto = () => ({
 const transparencia = () => ({
   path: '/transparencia',
   title: 'Transparencia',
-  description: 'Información institucional, informes, documentos, proyectos y política de tratamiento de datos de la Fundación Dios Tras Las Rejas Colombia.',
+  description: 'Información institucional, NIT, cuenta oficial, informes, documentos, proyectos y política de tratamiento de datos de la Fundación Dios Tras Las Rejas Colombia.',
   crumbs: [['Transparencia', '/transparencia']],
   body: `
-${opener({ n: '—', label: 'Transparencia', title: 'La confianza también <em>se acompaña</em>', lead: 'Publicamos aquí la información de la fundación a medida que está disponible.' })}
+${cover({ kicker: 'Transparencia', serif: 'La confianza también', caps: 'Se acompaña', lead: 'Publicamos aquí la información de la fundación a medida que está disponible.', short: true })}
 <section class="wrap longform">
-  <aside class="longform__side">${rh('01', 'Información institucional')}</aside>
+  <aside class="longform__side">${kicker('01 · Información institucional')}</aside>
   <dl class="longform__body facts">
     <div data-line><dt>Razón social</dt><dd>${site.legalName}</dd></div>
-    <div data-line><dt>NIT</dt><dd>${site.donate.bank.nit ? esc(site.donate.bank.nit) : tbd()}</dd></div>
+    <div data-line><dt>NIT</dt><dd>${esc(bank.nit)}</dd></div>
+    <div data-line><dt>Cuenta oficial</dt><dd>${esc(bank.bank)} · ${esc(bank.type)} ${esc(bank.number)}</dd></div>
+    <div data-line><dt>Correo</dt><dd>${site.emails.map((e) => `<a href="mailto:${esc(e)}">${esc(e)}</a>`).join('<br>')}</dd></div>
     <div data-line><dt>Representante legal</dt><dd>${tbd()}</dd></div>
     <div data-line><dt>Domicilio</dt><dd>${tbd()}</dd></div>
   </dl>
-  <aside class="longform__side">${rh('02', 'Informes')}</aside>
-  <ul class="longform__body docs">${['Informe de gestión anual', 'Estados financieros'].map((d) => `<li data-line><span>${d}</span>${tbd('Por publicar')}</li>`).join('')}</ul>
-  <aside class="longform__side">${rh('03', 'Documentos')}</aside>
-  <ul class="longform__body docs">${['Certificado de existencia y representación legal', 'Estatutos', 'Registro como entidad sin ánimo de lucro (ESAL)'].map((d) => `<li data-line><span>${d}</span>${tbd('Por publicar')}</li>`).join('')}</ul>
-  <aside class="longform__side">${rh('04', 'Proyectos')}</aside>
+  <aside class="longform__side">${kicker('02 · Proyectos')}</aside>
   <div class="longform__body">
-    <figure class="project" data-reveal>${pic('obra-patio', 'Patio interno de un establecimiento en obra, con una mezcladora y materiales de construcción.', { sizes: '(min-width: 900px) 50vw, 100vw' })}<figcaption>Adecuación de espacios · ${tbd('[CONTENIDO POR DEFINIR: nombre, lugar, fecha y alcance del proyecto]')}</figcaption></figure>
+    <figure class="project" data-reveal>${pic('obra-patio', milestones[0].alt, { sizes: '(min-width: 900px) 60vw, 100vw' })}<figcaption><strong>Patio 2</strong> · ${milestones[0].tag}. ${milestones[0].text}</figcaption></figure>
+    <p><strong>Reencuentros familiares.</strong> ${milestones[1].text}</p>
   </div>
-  <aside class="longform__side">${rh('05', 'Resultados')}</aside>
+  <aside class="longform__side">${kicker('03 · Informes')}</aside>
+  <ul class="longform__body docs">${['Informe de gestión anual', 'Estados financieros'].map((d) => `<li data-line><span>${d}</span>${tbd('Por publicar')}</li>`).join('')}</ul>
+  <aside class="longform__side">${kicker('04 · Documentos')}</aside>
+  <ul class="longform__body docs">${['Certificado de existencia y representación legal', 'Estatutos', 'Registro como entidad sin ánimo de lucro (ESAL)'].map((d) => `<li data-line><span>${d}</span>${tbd('Por publicar')}</li>`).join('')}</ul>
+  <aside class="longform__side">${kicker('05 · Resultados')}</aside>
   <div class="longform__body"><p>${tbd('[CONTENIDO POR DEFINIR: resultados verificables del acompañamiento]')}</p></div>
-  <aside class="longform__side" id="datos">${rh('06', 'Datos personales')}</aside>
+  <aside class="longform__side" id="datos">${kicker('06 · Datos personales')}</aside>
   <div class="longform__body">
-    <p>Los datos que compartes en los formularios de este sitio se usan únicamente para responder tu solicitud y coordinar tu participación o donación. No los vendemos ni los compartimos con terceros con fines comerciales. Puedes pedir en cualquier momento que los consultemos, corrijamos o eliminemos escribiéndonos por WhatsApp${site.email ? ` o a ${esc(site.email)}` : ''}, conforme a la Ley 1581 de 2012.</p>
+    <p>Los datos que compartes en los formularios de este sitio se usan únicamente para responder tu solicitud y coordinar tu participación o donación. No los vendemos ni los compartimos con terceros con fines comerciales. Puedes pedir en cualquier momento que los consultemos, corrijamos o eliminemos escribiéndonos por WhatsApp o a ${esc(site.email)}, conforme a la Ley 1581 de 2012.</p>
     <p class="small">Política completa de tratamiento de datos: ${tbd()}</p>
   </div>
-  <aside class="longform__side">${rh('07', 'Imágenes e historias')}</aside>
+  <aside class="longform__side">${kicker('07 · Imágenes e historias')}</aside>
   <div class="longform__body"><p>Toda fotografía o historia de una mujer acompañada se publica con su autorización. Si ves una imagen que debe retirarse, escríbenos y la retiramos.</p><p class="small">${verse.notice}</p></div>
 </section>`,
 });
@@ -634,12 +696,8 @@ const notFound = () => ({
   description: 'La página que buscas no existe.',
   noindex: true,
   body: `
-<section class="wrap nf">
-  ${rh('404', 'Página no encontrada')}
-  <h1 class="d1">Esta puerta <em>no lleva a ningún lugar</em></h1>
-  <p class="lede">Pero la historia continúa en otra parte.</p>
-  <div class="end__act">${more('/', 'Volver al inicio')}${more('/contacto', 'Contacto')}</div>
-</section>`,
+${cover({ kicker: '404', serif: 'Esta puerta', caps: 'No lleva a ningún lugar', lead: 'Pero la historia continúa en otra parte.', short: true })}
+<div class="wrap nf">${btn('/', 'Volver al inicio')}${more('/contacto', 'Contacto')}</div>`,
 });
 
 export const pages = [home(), historia(), trabajo(), programasIndex(), ...programs.map(programa), historias(), ...published.map((s) => storyPage(s)), previewStory, participa(), dona(), contacto(), transparencia(), notFound()];

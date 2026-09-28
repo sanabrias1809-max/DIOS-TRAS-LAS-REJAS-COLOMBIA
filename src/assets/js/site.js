@@ -9,7 +9,7 @@
 
   // Navegación: sólida al desplazarse; se oculta al bajar y vuelve al subir
   const nav = d.querySelector('[data-nav]');
-  const home = d.body.classList.contains('is-home');
+  const home = d.body.classList.contains('is-dark-top');
   let lastY = scrollY;
   const onScroll = () => {
     const y = scrollY;
@@ -120,6 +120,15 @@
     d.addEventListener('touchstart', pre, { passive: true });
     d.addEventListener('focusin', pre);
   }
+
+  // Copiar número de cuenta
+  d.querySelectorAll('[data-copy-btn]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      const t = b.parentElement.querySelector('[data-copy]').textContent.trim();
+      try { await navigator.clipboard.writeText(t); b.textContent = 'Copiado'; } catch { b.textContent = t; }
+      setTimeout(() => { b.textContent = 'Copiar'; }, 2200);
+    }),
+  );
 
   // Prellenar la forma de participar
   d.querySelectorAll('[data-prefill]').forEach((a) =>

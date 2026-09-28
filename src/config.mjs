@@ -16,7 +16,8 @@ export const site = {
   // Contacto
   whatsapp: env('WHATSAPP_NUMBER', '573002079151'), // formato internacional sin "+"
   whatsappDisplay: '+57 300 207 9151',
-  email: env('CONTACT_EMAIL'), // vacío = no se muestra
+  email: env('CONTACT_EMAIL', 'lina.sanchez.diostraslasrejas@gmail.com'),
+  emails: ['lina.sanchez.diostraslasrejas@gmail.com', 'lina.hurtado.diostraslasrejas@gmail.com'],
 
   // Redes sociales: deja vacío lo que no exista todavía.
   social: {
@@ -37,11 +38,11 @@ export const site = {
     onceUrl: env('DONATION_ONCE_URL'),
     monthlyUrl: env('DONATION_MONTHLY_URL'),
     bank: {
-      bank: env('BANK_NAME'),
-      type: env('BANK_ACCOUNT_TYPE'),
-      number: env('BANK_ACCOUNT_NUMBER'),
-      holder: env('BANK_ACCOUNT_HOLDER'),
-      nit: env('ORG_NIT'),
+      bank: env('BANK_NAME', 'Davivienda'),
+      type: env('BANK_ACCOUNT_TYPE', 'Cuenta de ahorros'),
+      number: env('BANK_ACCOUNT_NUMBER', '108900735565'),
+      holder: env('BANK_ACCOUNT_HOLDER', 'Fundación Dios Tras Las Rejas Colombia'),
+      nit: env('ORG_NIT', '902007213-6'),
     },
   },
 };

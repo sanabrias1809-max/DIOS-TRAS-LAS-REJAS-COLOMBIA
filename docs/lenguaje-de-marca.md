@@ -162,3 +162,30 @@ Hablamos desde nuestra fe, no hacia la fe del visitante. Explicamos el porqué (
 **Red Team (eliminado):** “salvar”, “rescatar”, “segunda oportunidad”, cifras sin fuente, testimonios inventados, urgencia en donaciones, “reclusas”, fotos del dolor como espectáculo, cruces y cielos decorativos, “Bienvenidos a…”, tono de iglesia genérica, cards y botones redondeados de ONG.
 
 **Blue Team (reforzado):** frase firma *Enviados a anunciar libertad*; la palabra LIBERTAD como elemento gráfico; Lucas 4:18 como mapa anotado (activo propio y reutilizable en redes); los cinco “statements” de programa como piezas de campaña; la estructura *adentro · la puerta · afuera*; la pregunta de cierre *¿Cuál puede ser tu lugar en esta historia?*
+
+## 13. Origen y voz de las fundadoras
+
+Dios Tras Las Rejas nació de un encuentro: Lina y Liliana llegaron a El Buen Pastor y se encontraron con mujeres cuyas historias iban mucho más allá de una condena.
+
+> “Cuando las conocimos, dejamos de ver una cárcel y empezamos a ver personas, historias y vidas que Dios también estaba tocando.” — Lina
+>
+> “No sentíamos que teníamos que llegar a enseñarles cómo vivir. Sentíamos que teníamos que caminar con ellas y descubrir juntas todo lo que Dios podía hacer.” — Liliana
+
+Progresión narrativa: **encuentro → vínculo → misión → acción → transformación.**
+
+## 14. Hitos (de acompañar a transformar)
+
+- **Patio 2** — *Un espacio transformado para volver a encontrarse.* Realizado junto a God Behind Bars: renovación del piso e instalación de cunas para los encuentros entre las mujeres y sus hijos.
+- **Reencuentros familiares** — *Volver a encontrarse también es parte de la libertad.*
+- Frase de cierre: **Transformar un espacio también puede transformar la manera en que una familia se encuentra.**
+
+God Behind Bars aparece como aliado de una acción concreta (“realizado junto a”), no como protagonista de la identidad.
+
+## 15. Programas y recursos
+
+Los programas se comunican como **“por ciclos, según los recursos disponibles”**: *Cada programa se abre por ciclos, cuando contamos con los recursos para sostenerlo con la calidad y la continuidad que cada mujer merece. Por eso un aporte no financia una idea: hace posible el siguiente ciclo.*
+CTA asociado: **Aportar al siguiente ciclo**.
+
+## 16. Sistema tipográfico de marca
+
+Serif itálica + mayúscula condensada, como en “*Yo soy* TESTIMONIO”: *Enviados a anunciar* **LIBERTAD** · *Cuando acompañar también significa* **TRANSFORMAR LOS ESPACIOS** · *La historia continúa* **¿CUÁL ES TU LUGAR EN ELLA?**

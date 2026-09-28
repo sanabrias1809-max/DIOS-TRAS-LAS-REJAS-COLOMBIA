@@ -12,7 +12,7 @@ Sitio estático, editorial y sin dependencias. Se genera con Node a partir de m�
 | Configuración | `src/config.mjs` + variables de entorno (`.env.example`) |
 | Estilos | `src/assets/css/site.css` (sistema editorial propio, sin framework) |
 | Interacción | `src/assets/js/site.js` (vanilla, ~8 KB) |
-| Tipografía | Instrument Serif (titulares), Newsreader (narrativa), Inter Tight (navegación e información) — Google Fonts |
+| Tipografía | Anton (mayúscula condensada de marca), Instrument Serif itálica (acento y narrativa), Inter Tight (texto e interfaz) — Google Fonts. Es el mismo sistema de la pieza “Yo soy TESTIMONIO” |
 
 ## Uso
 
@@ -24,22 +24,47 @@ npm run preview   # sirve dist/ sin recompilar
 
 El build **falla** si detecta un enlace interno roto, una imagen inexistente o una página sin exactamente un `<h1>`.
 
-## Publicación (dominio en Namecheap)
+## Publicación paso a paso (Netlify + dominio de Namecheap)
 
-Recomendado: **Netlify**, **Vercel** o **Cloudflare Pages** (gratuitos, HTTPS automático). Ya están incluidos `netlify.toml` y `vercel.json`.
+Recomendado: **Netlify** (gratuito, HTTPS automático, se actualiza solo con cada cambio en GitHub). `netlify.toml` ya está incluido.
 
-1. Sube este repositorio a GitHub y conéctalo al servicio elegido.
-   - Comando de build: `npm run build` · Carpeta a publicar: `dist`
-2. En el panel del servicio, agrega las variables de entorno (mínimo `SITE_URL=https://tudominio.com`).
-3. Agrega tu dominio en el servicio (“Custom domain”). Te dará los registros DNS.
-4. En **Namecheap → Domain List → Manage → Advanced DNS**:
-   - Netlify: registro `A` para `@` → `75.2.60.5`, y `CNAME` para `www` → `tu-sitio.netlify.app`
-   - Vercel: registro `A` para `@` → `76.76.21.21`, y `CNAME` para `www` → `cname.vercel-dns.com`
-   - (Verifica los valores exactos en el panel del servicio: son los que mandan.)
-   - Elimina los registros “URL Redirect” o “Parking” que Namecheap crea por defecto.
-5. Espera la propagación (minutos a pocas horas). El certificado HTTPS se emite solo.
+### A. Publicar el sitio en Netlify (10 minutos)
+1. Entra a **app.netlify.com** y crea una cuenta con **“Sign up with GitHub”** (usa la cuenta dueña del repositorio).
+2. Pulsa **Add new site → Import an existing project → GitHub** y autoriza el acceso.
+3. Elige el repositorio **DIOS-TRAS-LAS-REJAS-COLOMBIA**.
+4. En **Branch to deploy** elige la rama con el sitio (`main` después de fusionar, o `claude/creativax-studio-hero-d0xuj3`).
+5. Netlify detecta la configuración: **Build command** `npm run build` · **Publish directory** `dist`. No cambies nada.
+6. Antes de publicar, abre **Add environment variables** y crea `SITE_URL` = `https://www.tudominio.com` (tu dominio real, sin “/” al final).
+7. Pulsa **Deploy**. En 1–2 minutos tendrás una dirección temporal tipo `https://algo.netlify.app` para revisar.
 
-Cualquier hosting estático sirve: basta subir el contenido de `dist/`. Las rutas son carpetas con `index.html` (`/dona/index.html`), así que funcionan sin configuración especial. `404.html` ya está generado.
+### B. Conectar el dominio en Netlify
+1. En el sitio de Netlify: **Domain management → Add a domain** → escribe `tudominio.com` → **Verify** → **Add domain**.
+2. Netlify mostrará los registros DNS que necesita (la IP del dominio raíz y el destino para `www`). Déjala abierta.
+
+### C. Configurar el DNS en Namecheap
+1. Entra a **namecheap.com → Sign In → Domain List**.
+2. Junto a tu dominio pulsa **Manage**.
+3. En la pestaña **Domain**, sección **Nameservers**, confirma que diga **Namecheap BasicDNS**.
+4. Ve a la pestaña **Advanced DNS**.
+5. En **Host Records**, **elimina** los registros que Namecheap crea por defecto (el `CNAME www → parkingpage.namecheap.com` y el `URL Redirect Record @`).
+6. Pulsa **Add New Record** y crea:
+
+| Tipo | Host | Valor | TTL |
+|---|---|---|---|
+| `A Record` | `@` | `75.2.60.5` | Automatic |
+| `CNAME Record` | `www` | `tu-sitio.netlify.app` (la dirección temporal del paso A.7) | Automatic |
+
+7. Guarda cada registro con el ✓ verde.
+8. Vuelve a Netlify → **Domain management**: en unos minutos (hasta 24 h) aparecerá como verificado. En **HTTPS** pulsa **Verify DNS configuration** y luego **Provision certificate**. El candado se activa solo.
+9. En Netlify marca `www.tudominio.com` como **Primary domain** para que la versión sin `www` redirija sola.
+
+> Si Netlify muestra valores distintos a los de la tabla, usa siempre los de Netlify.
+> Si el correo del dominio está en Namecheap (Private Email), **no borres** los registros `MX` ni `TXT`.
+
+### Alternativa: Vercel
+Igual que arriba (`vercel.json` incluido). DNS en Namecheap: `A @ → 76.76.21.21` y `CNAME www → cname.vercel-dns.com`.
+
+Cualquier hosting estático sirve: basta subir el contenido de `dist/`. Las rutas son carpetas con `index.html`, y `404.html` ya está generado.
 
 ## Variables de entorno
 
@@ -49,11 +74,11 @@ Ver `.env.example`. Ninguna es secreta (todas terminan visibles en el sitio).
 |---|---|
 | `SITE_URL` | Dominio definitivo. Afecta canonical, Open Graph, Schema.org y sitemap. **Obligatoria antes de publicar.** |
 | `WHATSAPP_NUMBER` | Número del botón y los mensajes de WhatsApp (por defecto `573002079151`) |
-| `CONTACT_EMAIL` | Correo visible en contacto y pie |
+| `CONTACT_EMAIL` | Correo principal (por defecto lina.sanchez.diostraslasrejas@gmail.com) |
 | `SOCIAL_*` | Enlaces a redes (vacías = no se muestran) |
 | `FORM_ENDPOINT` | Endpoint POST JSON para formularios |
 | `DONATION_*` | Enlaces de pago de la pasarela |
-| `BANK_*`, `ORG_NIT` | Datos oficiales para transferencia |
+| `BANK_*`, `ORG_NIT` | Datos de transferencia. Ya vienen configurados: Davivienda, cuenta de ahorros 108900735565, NIT 902007213-6 |
 
 ## Dónde cambiar las cosas
 
@@ -117,6 +142,8 @@ Cada página tiene title y description únicos, canonical, Open Graph, Twitter/X
 
 ## Contenido pendiente
 
-Buscar `CONTENIDO POR DEFINIR` en `src/`. Principalmente: dominio (`SITE_URL`), correo, redes, NIT y datos legales, cuenta bancaria, pasarela de pagos, historia de fundación, frecuencia/duración de programas, fotografía de talleres, historias autorizadas, documentos de transparencia.
+Buscar `CONTENIDO POR DEFINIR` en `src/`. Falta: dominio (`SITE_URL`), redes sociales, representante legal y domicilio, pasarela de pagos, certificado de donación, fotografía de los reencuentros familiares, historias autorizadas y documentos de transparencia.
+
+Los programas se describen como **“por ciclos, según los recursos disponibles”** (`cycles` en `src/content.mjs`): así se comunica que se realizan según los recursos, sin sonar a limitación.
 
 El sistema de lenguaje de marca está en `docs/lenguaje-de-marca.md`.

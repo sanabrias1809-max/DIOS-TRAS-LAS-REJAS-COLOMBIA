@@ -30,6 +30,7 @@ export const programs = [
     word: 'Buenas nuevas',
     principle: 'Fe',
     layout: 'anuncio',
+    hero: 'capilla', heroAlt: 'Mujeres reunidas en la capilla de El Buen Pastor durante una jornada de la fundación.',
     img: 'muro-cielo',
     alt: 'Muro y pabellón de la cárcel El Buen Pastor bajo un cielo nublado, en blanco y negro.',
     short: 'Un encuentro con Dios y con la propia historia',
@@ -45,8 +46,9 @@ export const programs = [
     word: 'Vista a los ciegos',
     principle: 'Identidad',
     layout: 'identidad',
-    img: 'encuentro-ancho',
-    alt: 'Dos mujeres de la fundación acompañan en oración a una mujer sentada en una banca del patio.',
+    hero: 'retrato-taller', heroAlt: 'Retrato de una mujer sonriente durante un taller en El Buen Pastor.', heroPos: '50% 30%',
+    img: 'yo-soy-testimonio',
+    alt: 'Tres mujeres de la fundación con prendas de la campaña “Yo soy testimonio”.',
     short: 'Volver a verse con claridad, más allá de cualquier etiqueta',
     statement: 'Antes de la condena hubo un nombre',
     lead: 'La verdad de ser mujer acompaña el proceso de volver a mirarse con los ojos con que Dios mira: con valor, con historia y con futuro.',
@@ -61,6 +63,7 @@ export const programs = [
     word: 'Sanar a los quebrantados',
     principle: 'Acompañamiento',
     layout: 'encuentro',
+    hero: 'encuentro-ancho', heroAlt: 'Dos mujeres de la fundación acompañan en oración a una mujer en el patio.',
     img: 'oracion-acompanamiento',
     alt: 'Dos mujeres de la fundación oran junto a una mujer sentada en una banca del patio de la cárcel.',
     detail: 'detalle-manos',
@@ -78,7 +81,9 @@ export const programs = [
     word: 'Libertad a los oprimidos',
     principle: 'Propósito',
     layout: 'oficio',
-    img: null, // PENDIENTE: fotografía real de un taller (manos trabajando; sin rostros si no hay autorización)
+    hero: 'taller-costura', heroAlt: 'Mujeres en un taller productivo muestran las piezas que están elaborando.',
+    img: 'taller-producto',
+    alt: 'Pantuflas y prendas elaboradas en los talleres productivos.',
     short: 'Manos que aprenden un oficio y preparan el sustento',
     statement: 'La dignidad también se construye con las manos',
     lead: 'En los talleres productivos cada mujer descubre lo que es capaz de hacer y empieza a preparar el sustento de su vida en libertad.',
@@ -93,6 +98,7 @@ export const programs = [
     word: 'Pregonar libertad a los cautivos',
     principle: 'Libertad',
     layout: 'regreso',
+    hero: 'oracion-noche', heroAlt: 'Una mujer de la fundación ora de rodillas junto a otra mujer, de noche, en la calle.', heroPos: '50% 45%',
     img: 'patio-panoramica',
     alt: 'Mujeres juegan fútbol en el patio de la cárcel El Buen Pastor, rodeado de pabellones.',
     short: 'Preparar la salida antes de que llegue',
@@ -103,6 +109,40 @@ export const programs = [
     stations: [['Adentro', 'Libertad interior, identidad y proyecto de vida'], ['La puerta', 'Acompañamiento en el momento de la salida'], ['Afuera', 'Familia, comunidad de fe, trabajo y propósito']],
   },
 ];
+
+// Los programas se activan por ciclos, según los recursos disponibles.
+export const cycles = {
+  short: 'Por ciclos, según los recursos disponibles',
+  long: 'Cada programa se abre por ciclos, cuando contamos con los recursos para sostenerlo con la calidad y la continuidad que cada mujer merece. Por eso un aporte no financia una idea: hace posible el siguiente ciclo.',
+};
+
+// Hitos: cuando acompañar también significa transformar los espacios
+export const milestones = [
+  {
+    id: 'patio-2',
+    name: 'Patio 2',
+    tag: 'Realizado junto a God Behind Bars',
+    line: 'Un espacio transformado para volver a encontrarse',
+    text: 'La intervención del Patio 2 incluyó la renovación del piso y la instalación de cunas, creando un espacio más adecuado para los encuentros entre las mujeres y sus hijos.',
+    img: 'obra-patio',
+    alt: 'Patio 2 de El Buen Pastor durante la renovación del piso, con murales infantiles al fondo.',
+  },
+  {
+    id: 'reencuentros',
+    name: 'Reencuentros familiares',
+    tag: 'Volver a encontrarse también es parte de la libertad',
+    line: 'Porque algunos vínculos necesitan un lugar para volver a encontrarse',
+    text: 'Los reencuentros familiares buscan fortalecer los vínculos entre las mujeres privadas de la libertad y sus familias, especialmente con sus hijos, generando espacios para compartir y mantener vivos esos lazos.',
+    img: null, // PENDIENTE: fotografía autorizada de un reencuentro familiar
+  },
+];
+
+export const founders = {
+  lina: 'Cuando las conocimos, dejamos de ver una cárcel y empezamos a ver personas, historias y vidas que Dios también estaba tocando.',
+  liliana: 'No sentíamos que teníamos que llegar a enseñarles cómo vivir. Sentíamos que teníamos que caminar con ellas y descubrir juntas todo lo que Dios podía hacer.',
+};
+
+export const allies = [{ name: 'God Behind Bars', note: 'Transformación del Patio 2', url: 'https://www.godbehindbars.com/' }];
 
 export const ways = [
   { id: 'donar', t: 'Donar', d: 'Sostener el acompañamiento con un aporte único o mensual', href: '/dona', cta: 'Ir a donaciones' },
