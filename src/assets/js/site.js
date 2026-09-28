@@ -13,7 +13,8 @@
   let lastY = scrollY;
   const onScroll = () => {
     const y = scrollY;
-    nav.classList.toggle('is-solid', !home || y > 24);
+    nav.classList.toggle('is-solid', y > 24);
+    d.documentElement.classList.toggle('is-scrolled', y > 600);
     nav.classList.toggle('is-hidden', y > 320 && y > lastY + 4);
     if (y < lastY - 4 || y < 320) nav.classList.remove('is-hidden');
     lastY = y;

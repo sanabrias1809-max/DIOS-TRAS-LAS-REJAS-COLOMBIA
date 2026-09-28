@@ -50,70 +50,91 @@ export const kicker = (text, cls = '') => `<p class="k ${cls}">${text}</p>`;
 export const more = (href, text, ext = href.startsWith('http')) => `<a class="more" href="${href}"${ext ? ' target="_blank" rel="noopener"' : ''}><span>${text}</span>${arrow}</a>`;
 export const btn = (href, text, cls = '', ext = href.startsWith('http')) => `<a class="btn ${cls}" href="${href}"${ext ? ' target="_blank" rel="noopener"' : ''}><span>${text}</span>${arrow}</a>`;
 
+// Menú principal (con desplegables, como la referencia)
 const nav = [
-  ['/nuestra-historia', 'Nuestra historia'],
-  ['/nuestro-trabajo', 'Nuestro trabajo'],
+  ['/', 'Inicio'],
+  ['/nuestra-historia', 'Nosotros', [['/nuestra-historia', 'Nuestra historia'], ['/nuestra-historia#manifiesto', 'Manifiesto'], ['/transparencia', 'Transparencia']]],
+  ['/nuestro-trabajo', 'Nuestro trabajo', [['/programas', 'Todos los programas'], ...programs.map((p) => [`/programas/${p.slug}`, p.name]), ['/nuestro-trabajo#patio-2', 'Patio 2'], ['/nuestro-trabajo#reencuentros', 'Reencuentros familiares']]],
   ['/historias', 'Historias'],
-  ['/participa', 'Participa'],
+  ['/participa', 'Participa', [['/participa#voluntariado', 'Voluntariado'], ['/participa#iglesias', 'Iglesias'], ['/participa#empresas', 'Empresas'], ['/participa#organizaciones', 'Organizaciones'], ['/participa#aliados', 'Aliados']]],
+  ['/dona', 'Donaciones'],
+  ['/contacto', 'Contacto'],
 ];
+const chev = '<svg class="chev" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1.5 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+const isCur = (path, h) => (h === '/' ? path === '/' : path.startsWith(h));
 
 const header = (path) => `
 <a class="skip" href="#main">Saltar al contenido</a>
 <header class="nav" data-nav>
-  <a href="/" class="brand" aria-label="${site.name}, inicio">
-    <img src="/assets/img/logo-mark.webp" alt="" width="42" height="34">
-    <span class="brand__w">Dios Tras Las Rejas<span>Colombia</span></span>
-  </a>
-  <nav aria-label="Principal" class="nav__links">
-    ${nav.map(([h, t]) => `<a href="${h}"${path.startsWith(h) ? ' aria-current="page"' : ''}>${t}</a>`).join('')}
-  </nav>
-  <a href="/dona" class="nav__give">Donar</a>
-  <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-open aria-label="Abrir menú"><i aria-hidden="true"></i></button>
+  <div class="nav__in">
+    <a href="/" class="brand" aria-label="${site.name}, inicio">
+      <img src="/assets/img/logo-mark.webp" alt="" width="58" height="47">
+      <span class="brand__w"><small>Fundación</small>Dios Tras Las Rejas<em>Enviados a anunciar libertad · Colombia</em></span>
+    </a>
+    <nav aria-label="Principal" class="nav__links">
+      <ul>
+        ${nav
+          .map(([h, t, sub]) =>
+            sub
+              ? `<li class="has-sub"><a href="${h}"${isCur(path, h) ? ' aria-current="page"' : ''}>${t}${chev}</a><ul class="sub">${sub.map(([sh, st]) => `<li><a href="${sh}">${st}</a></li>`).join('')}</ul></li>`
+              : `<li><a href="${h}"${isCur(path, h) ? ' aria-current="page"' : ''}${h === '/dona' ? ' class="nav__give"' : ''}>${t}</a></li>`,
+          )
+          .join('')}
+      </ul>
+    </nav>
+    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-open aria-label="Abrir menú"><i aria-hidden="true"></i></button>
+  </div>
 </header>
 <div class="menu" id="menu" hidden data-drawer role="dialog" aria-modal="true" aria-label="Menú">
   <div class="menu__top">
-    <a href="/" class="brand"><img src="/assets/img/logo-mark.webp" alt="" width="42" height="34"><span class="brand__w">Dios Tras Las Rejas<span>Colombia</span></span></a>
+    <a href="/" class="brand"><img src="/assets/img/logo-mark.webp" alt="" width="58" height="47"><span class="brand__w"><small>Fundación</small>Dios Tras Las Rejas<em>Enviados a anunciar libertad · Colombia</em></span></a>
     <button class="nav__menu is-x" type="button" data-menu-close aria-label="Cerrar menú"><i aria-hidden="true"></i></button>
   </div>
   <nav aria-label="Menú móvil" class="menu__nav">
-    ${[['/', 'Inicio'], ...nav, ['/programas', 'Programas'], ['/contacto', 'Contacto']].map(([h, t], i) => `<a href="${h}"><span>${String(i + 1).padStart(2, '0')}</span>${t}</a>`).join('')}
+    ${nav.map(([h, t, sub]) => `<a href="${h}">${t}</a>${sub ? `<div class="menu__sub">${sub.map(([sh, st]) => `<a href="${sh}">${st}</a>`).join('')}</div>` : ''}`).join('')}
   </nav>
-  <a class="btn btn--gold menu__give" href="/dona"><span>Donar</span>${arrow}</a>
-  <p class="menu__verse"><em>“Me ha enviado… a pregonar libertad a los cautivos”</em><span>Lucas 4:18</span></p>
+  <a class="btn btn--gold menu__give" href="/dona"><span>Donar</span></a>
 </div>`;
 
+const socialIcons = {
+  instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/>',
+  facebook: '<path d="M15 3h-2a4 4 0 0 0-4 4v3H7v4h2v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z"/>',
+  youtube: '<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/>',
+  tiktok: '<path d="M14 3v12a4 4 0 1 1-4-4M14 3a5 5 0 0 0 5 5"/>',
+};
 const socials = () =>
   Object.entries(site.social)
     .filter(([, u]) => u)
-    .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k[0].toUpperCase() + k.slice(1)}</a>`)
+    .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">${socialIcons[k]}</svg></a>`)
     .join('');
 
 const footer = () => `
 <footer class="foot">
-  <div class="wrap">
-    <div class="foot__top">
-      ${T('Enviados a anunciar', 'Libertad', { tag: 'p', cls: 't--xl' })}
-      <div class="foot__cta">${btn('/dona', 'Donar', 'btn--gold')}${btn('/participa', 'Haz parte', 'btn--line')}</div>
+  <div class="wrap foot__grid">
+    <div class="foot__brand">
+      <img src="/assets/img/logo-full-light-600.webp" alt="Fundación Dios Tras Las Rejas Colombia" width="190" height="178" loading="lazy">
+      <div class="foot__social">${socials()}<a href="${waLink('Hola, quiero saber más sobre Dios Tras Las Rejas Colombia.')}" target="_blank" rel="noopener" aria-label="WhatsApp">${waIcon}</a></div>
     </div>
-    <div class="foot__grid">
-      <div class="foot__brand">
-        <img src="/assets/img/logo-full-light-600.webp" alt="Fundación Dios Tras Las Rejas Colombia" width="140" height="131" loading="lazy">
-        <p>Acompañamos a mujeres privadas de la libertad en la Cárcel El Buen Pastor desde la fe, la formación y la preparación para volver a la vida en libertad.</p>
-      </div>
-      <nav aria-label="Conoce"><h2>Conoce</h2><a href="/nuestra-historia">Nuestra historia</a><a href="/nuestro-trabajo">Nuestro trabajo</a><a href="/historias">Historias</a><a href="/transparencia">Transparencia</a></nav>
-      <nav aria-label="Programas"><h2>Programas</h2>${programs.map((p) => `<a href="/programas/${p.slug}">${p.name}</a>`).join('')}</nav>
-      <div><h2>Contacto</h2>
-        <a href="${waLink('Hola, quiero saber más sobre Dios Tras Las Rejas Colombia.')}" target="_blank" rel="noopener">WhatsApp ${site.whatsappDisplay}</a>
-        ${site.emails.map((e) => `<a href="mailto:${esc(e)}">${esc(e)}</a>`).join('')}${socials()}
-      </div>
+    <div class="foot__contact">
+      <h2>WhatsApp</h2><p><a href="${waLink('Hola, quiero saber más sobre Dios Tras Las Rejas Colombia.')}" target="_blank" rel="noopener">${site.whatsappDisplay}</a></p>
+      <h2>Dónde servimos</h2><p>Cárcel El Buen Pastor<br>Colombia</p>
+      <h2>Correo electrónico</h2><p>${site.emails.map((e) => `<a href="mailto:${esc(e)}">${esc(e)}</a>`).join('<br>')}</p>
     </div>
-    <div class="foot__legal">
-      <p>© ${new Date().getFullYear()} ${site.legalName} · NIT ${esc(site.donate.bank.nit)}</p>
-      <p>Lucas 4:18 · Reina-Valera 1960</p>
-      <p><a href="/transparencia#datos">Tratamiento de datos</a></p>
+    <div class="foot__sub">
+      <h2 class="foot__subh">Suscríbete para recibir información de la Fundación</h2>
+      <form class="subform" data-form="suscripcion" data-title="Suscripción a noticias" novalidate>
+        <div class="field"><label for="sub-n">Nombre</label><input id="sub-n" name="nombre" autocomplete="name" required aria-required="true" aria-describedby="sub-ne"><p class="err" id="sub-ne" aria-live="polite"></p></div>
+        <div class="field"><label for="sub-e">Email</label><input id="sub-e" name="email" type="email" autocomplete="email" required aria-required="true" aria-describedby="sub-ee"><p class="err" id="sub-ee" aria-live="polite"></p></div>
+        <div class="hp" aria-hidden="true"><label>No llenar<input name="empresa_web" tabindex="-1" autocomplete="off"></label></div>
+        <div class="field field--check"><input type="checkbox" id="c-sub" name="consentimiento" required aria-required="true" aria-describedby="c-sube"><label for="c-sub">Acepto la <a href="/transparencia#datos">política de datos</a></label><p class="err" id="c-sube" aria-live="polite"></p></div>
+        <button class="btn btn--gold" type="submit"><span>Enviar</span></button>
+        <p class="form__status" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </div>
+  <div class="foot__legal"><p>Copyright ${new Date().getFullYear()} - ${site.legalName} · NIT ${esc(site.donate.bank.nit)} · <a href="/transparencia">Transparencia</a></p></div>
 </footer>
+<a class="totop" href="#main" aria-label="Volver arriba"><svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 6.5 5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></a>
 <a class="wa" href="${waLink('Hola, quiero saber más sobre Dios Tras Las Rejas Colombia.')}" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">${waIcon}<span>WhatsApp</span></a>`;
 
 const orgLd = () => ({
@@ -161,7 +182,7 @@ ${noindex ? '<meta name="robots" content="noindex, nofollow">' : `<link rel="can
 <link rel="manifest" href="/site.webmanifest">
 ${preload ? `<link rel="preload" as="image" href="/assets/img/${preload}-640.webp" media="(max-width: 700px)"><link rel="preload" as="image" href="/assets/img/${preload}-${(variants[preload] || [640, 1200]).at(-1)}.webp" media="(min-width: 701px)">` : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Instrument+Serif:ital@1&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;500;600;700&family=Special+Elite&family=Roboto:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap">
 <link rel="stylesheet" href="/assets/css/site.css?v=__V__">
 <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>
 <script src="/assets/js/site.js?v=__V__" defer></script>
@@ -177,15 +198,17 @@ ${footer()}
 </html>`;
 }
 
-// Portada cinematográfica de página interna: fotografía a sangre + titular de marca
-export const cover = ({ kicker: k, serif, caps, lead, img, alt, pos, short = false }) => `
-<header class="cover${short ? ' cover--short' : ''}${img ? '' : ' cover--plain'}">
-  ${img ? `<div class="cover__media">${pic(img, alt, { eager: true, pos })}</div>` : ''}
-  <div class="wrap cover__in">
-    ${kicker(k, 'k--light')}
-    ${T(serif, caps, { tag: 'h1' })}
-    ${lead ? `<p class="cover__lead" data-reveal>${lead}</p>` : ''}
+// Encabezado de página interna: foto a lo ancho, título fino centrado y separador con ícono
+export const cover = ({ kicker: k, serif, caps, lead, img, alt, pos }) => `
+<header class="pbanner">
+  ${img ? `<figure class="pbanner__img">${pic(img, alt, { eager: true, pos })}</figure>` : '<div class="pbanner__space"></div>'}
+  <div class="wrap pbanner__in">
+    ${k ? `<p class="pbanner__k">${k}</p>` : ''}
+    <h1 class="pbanner__h">${caps}</h1>
+    ${serif ? `<p class="pbanner__s">${serif}</p>` : ''}
+    ${lead ? `<p class="pbanner__lead">${lead}</p>` : ''}
   </div>
+  <div class="divider" aria-hidden="true"><span>${'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v18M7 8h10"/></svg>'}</span></div>
 </header>`;
 
 // Banda de cierre sobre fotografía

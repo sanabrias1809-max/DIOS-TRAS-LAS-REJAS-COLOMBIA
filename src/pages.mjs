@@ -158,217 +158,119 @@ const donateForm = () => {
 
 // ───────────────────────── HOME ─────────────────────────
 
-const slides = [
-  ['capilla', 'Cientos de mujeres reunidas en la capilla de El Buen Pastor durante una jornada de la fundación.', '50% 60%'],
-  ['taller-costura', 'Mujeres en un taller productivo muestran con alegría las piezas que están elaborando.', '50% 40%'],
-  ['oracion-acompanamiento', 'Dos mujeres de la fundación oran junto a una mujer en una banca del patio.', '50% 40%'],
-];
+const tw = (a, b, id = '', tag = 'h2') => `<${tag}${id ? ` id="${id}"` : ''} class="tw">${a} <span>${b}</span></${tag}>`;
+const col = ({ img, alt, pos, title, text, href, cta = 'Más información' }) => `
+<li class="col" data-reveal>
+  <figure class="col__img">${pic(img, alt, { sizes: '(min-width: 1100px) 20vw, (min-width: 700px) 45vw, 92vw', pos })}</figure>
+  <h3 class="col__t">${title}</h3>
+  <p class="col__p">${text}</p>
+  <a class="btn btn--sm" href="${href}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${cta}</a>
+</li>`;
 
 const home = () => ({
   path: '/',
   title: 'Dios Tras Las Rejas Colombia · Enviados a anunciar libertad',
   description: 'Acompañamos a mujeres privadas de la libertad en la Cárcel El Buen Pastor desde la fe, la formación y la preparación para volver a la vida en libertad. Lucas 4:18.',
-  preload: 'capilla',
   body: `
 <section class="hero" aria-labelledby="hero-h">
-  <div class="hero__slides" data-slider>
-    ${slides.map(([img, alt, pos], i) => `<figure class="hero__slide${i === 0 ? ' is-active' : ''}">${pic(img, alt, { eager: i === 0, pos })}</figure>`).join('')}
+  <div class="hero__media" aria-hidden="true">
+    <video autoplay loop muted playsinline preload="metadata" poster="/assets/img/hero-poster.webp" data-ambient><source src="/assets/video/hero.webm" type="video/webm"><source src="/assets/video/hero.mp4" type="video/mp4"></video>
   </div>
   <div class="wrap hero__in">
-    <p class="eyebrow eyebrow--light">Fundación cristiana · Cárcel El Buen Pastor · Colombia</p>
-    <h1 id="hero-h" class="hero__h">Enviados a anunciar <em>libertad</em></h1>
-    <p class="hero__lead">Acompañamos a mujeres privadas de la libertad desde la fe, la formación y la preparación para volver a la vida en libertad.</p>
+    <h1 id="hero-h" class="hero__h">Acompañamos a las mujeres de El Buen Pastor<br>en su camino hacia la libertad<br>desde la fe, la formación y la dignidad</h1>
     <div class="hero__act">
-      ${btn('/dona', 'Quiero donar', 'btn--gold')}
-      ${btn('/nuestra-historia', 'Conoce nuestra historia', 'btn--white')}
+      <a class="btn" href="/participa#formulario">Quiero ser voluntario</a>
+      <a class="btn" href="/programas">Conoce los programas</a>
+      <a class="btn btn--gold" href="/dona">Donaciones</a>
     </div>
   </div>
-  <div class="hero__dots" role="tablist" aria-label="Fotografías">${slides.map((_, i) => `<button type="button" role="tab" aria-label="Foto ${i + 1}" aria-selected="${i === 0}" data-dot="${i}"></button>`).join('')}</div>
 </section>
 
-<section class="intro" aria-label="Nuestra misión">
-  <div class="wrap intro__in" data-reveal>
-    <img src="/assets/img/logo-full-600.webp" alt="Fundación Dios Tras Las Rejas Colombia" width="220" height="206" loading="lazy">
-    <p class="intro__p">Una reja puede limitar un espacio, pero <em>no puede encerrar a Dios, ni una historia, ni un nombre.</em></p>
-    <p class="intro__v">“Me ha enviado… a pregonar libertad a los cautivos” <span>Lucas 4:18</span></p>
-  </div>
-</section>
-
-<section class="pillars" aria-labelledby="pill-h">
+<section class="sec" aria-labelledby="ruta-h">
   <div class="wrap">
-    <h2 id="pill-h" class="sr">Cómo acompañamos</h2>
-    <ul class="pillars__grid">
-      ${[
-        ['book', 'Fe', 'Buenas nuevas contadas con respeto: Dios no se quedó afuera de la cárcel.'],
-        ['sparkle', 'Formación', 'Identidad, valor propio y oficios que preparan para una nueva etapa.'],
-        ['hands', 'Acompañamiento', 'Una persona que camina con otra, sin prisa y de cerca.'],
-        ['key', 'Libertad', 'La interior hoy, y el camino de regreso a la familia y la sociedad.'],
-      ]
-        .map(([ic, t, d]) => `<li class="pillar" data-reveal>${ico(ic)}<h3>${t}</h3><p>${d}</p></li>`)
-        .join('')}
+    ${tw('Ruta de', 'acompañamiento', 'ruta-h')}
+    <ul class="cols cols--5">
+      ${programs.map((p) => col({ img: p.hero, alt: p.heroAlt, pos: p.heroPos, title: p.name, text: p.short + '.', href: `/programas/${p.slug}` })).join('')}
     </ul>
+    <p class="note" data-reveal>${cycles.long}</p>
   </div>
 </section>
 
-<section class="about" aria-labelledby="about-h">
-  <div class="wrap about__grid">
-    <div class="about__media" data-reveal>
-      <figure class="about__main">${pic('oracion-acompanamiento', 'Dos mujeres de la fundación oran junto a una mujer sentada en una banca del patio.', { sizes: '(min-width: 900px) 30vw, 70vw', pos: '50% 40%' })}</figure>
-      <figure class="about__sub">${pic('detalle-manos', 'Detalle de manos que sostienen hojas y una Biblia durante un encuentro.', { sizes: '(min-width: 900px) 18vw, 40vw' })}</figure>
-    </div>
-    <div class="about__txt">
-      <p class="eyebrow">Quiénes somos</p>
-      <h2 id="about-h" class="h2">Una historia que nació <em>de un encuentro</em></h2>
-      <p class="lead" data-reveal>Lina y Liliana llegaron a El Buen Pastor y se encontraron con mujeres cuyas historias iban mucho más allá de una condena. Escucharon, conocieron sus vidas… y se enamoraron de ellas.</p>
-      <blockquote class="quote-card" data-reveal>${ico('quote')}<p>${founders.lina}</p><footer>Lina · Cofundadora</footer></blockquote>
-      ${btn('/nuestra-historia', 'Conoce nuestra historia', 'btn--navy')}
-    </div>
-  </div>
-</section>
-
-<section class="programs" aria-labelledby="prog-h">
+<section class="sec sec--grey" aria-labelledby="transf-h">
   <div class="wrap">
-    <div class="sec-head" data-reveal>
-      <p class="eyebrow">Nuestro trabajo</p>
-      <h2 id="prog-h" class="h2">Cinco programas, <em>un solo camino</em></h2>
-      <p class="sec-head__p">Fe, formación, identidad, acompañamiento y propósito: cada programa prepara el siguiente paso hacia la libertad.</p>
-    </div>
-    <ul class="cards">
-      ${programs
-        .map(
-          (p) => `<li class="card" data-reveal><a href="/programas/${p.slug}">
-        <figure class="card__img">${pic(p.hero, p.heroAlt, { sizes: '(min-width: 1100px) 26vw, (min-width: 700px) 45vw, 90vw', pos: p.heroPos })}<span class="card__n">${p.n}</span></figure>
-        <div class="card__body"><p class="card__tag">${p.principle}</p><h3>${p.name}</h3><p>${p.short}</p><span class="card__more">Conocer más ${arrow}</span></div>
-      </a></li>`,
-        )
-        .join('')}
-      <li class="card card--cta" data-reveal><div class="card__body">${ico('heart')}<h3>Cada programa se abre por ciclos</h3><p>${cycles.long}</p>${btn('/dona', 'Aportar al siguiente ciclo', 'btn--gold')}</div></li>
-    </ul>
-  </div>
-</section>
-
-<section class="impact" aria-labelledby="imp-h">
-  <div class="wrap">
-    <div class="sec-head" data-reveal>
-      <p class="eyebrow">De acompañar a transformar</p>
-      <h2 id="imp-h" class="h2">Cuando acompañar también significa <em>transformar los espacios</em></h2>
-    </div>
-    <div class="impact__grid">
-      <article class="feature" data-reveal>
-        <figure>${pic('obra-patio', milestones[0].alt, { sizes: '(min-width: 900px) 55vw, 100vw' })}<span class="badge">${ico('handshake')} Junto a God Behind Bars</span></figure>
-        <div class="feature__body">
-          <h3>${milestones[0].name}</h3>
-          <p class="feature__l">${milestones[0].line}</p>
-          <p>${milestones[0].text}</p>
-        </div>
-      </article>
-      <article class="feature feature--navy" data-reveal>
-        <div class="feature__body">
-          ${ico('home')}
-          <h3>${milestones[1].name}</h3>
-          <p class="feature__l">${milestones[1].tag}</p>
-          <p>${milestones[1].text}</p>
-          <p class="feature__q">“Transformar un espacio también puede transformar la manera en que una familia se encuentra.”</p>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="film" aria-labelledby="film-h">
-  <div class="wrap">
-    <div class="film__box" data-reveal>
-      <video autoplay loop muted playsinline preload="metadata" poster="/assets/img/hero-poster.webp" data-ambient aria-hidden="true"><source src="/assets/video/hero.webm" type="video/webm"><source src="/assets/video/hero.mp4" type="video/mp4"></video>
-      <div class="film__txt">
-        <p class="eyebrow eyebrow--light">El Buen Pastor</p>
-        <h2 id="film-h" class="h2 h2--light">El lugar donde <em>ocurre el encuentro</em></h2>
-        <button class="play-btn" type="button" data-video-open aria-label="Ver el video">${play}</button>
+    ${tw('De acompañar a', 'transformar', 'transf-h')}
+    <div class="split">
+      <figure class="split__img" data-reveal>${pic('obra-patio', milestones[0].alt, { sizes: '(min-width: 900px) 50vw, 100vw' })}<figcaption>Patio 2 · Realizado junto a God Behind Bars</figcaption></figure>
+      <div class="split__txt" data-reveal>
+        <h3 class="acc">${milestones[0].name}</h3>
+        <p class="split__l">${milestones[0].line}. <strong>Realizado junto a God Behind Bars.</strong></p>
+        <p>${milestones[0].text}</p>
+        <h3 class="acc">${milestones[1].name}</h3>
+        <p class="split__l">${milestones[1].tag}.</p>
+        <p>${milestones[1].text}</p>
+        <a class="btn btn--sm" href="/nuestro-trabajo#patio-2">Más información</a>
       </div>
     </div>
   </div>
 </section>
-<div class="modal" hidden data-video-modal role="dialog" aria-modal="true" aria-label="Video: corredor de la cárcel El Buen Pastor">
-  <div class="modal__bg" data-video-close></div>
-  <div class="modal__box">
-    <button class="modal__close" type="button" data-video-close>Cerrar ✕</button>
-    <video controls playsinline preload="none" poster="/assets/img/hero-poster.webp" data-modal-video><source src="/assets/video/hero.mp4" type="video/mp4"><source src="/assets/video/hero.webm" type="video/webm"></video>
-  </div>
-</div>
 
-<section class="freedom" aria-labelledby="free-h">
-  <div class="wrap freedom__grid">
-    <div data-reveal>
-      <p class="eyebrow eyebrow--light">Libertad</p>
-      <h2 id="free-h" class="h2 h2--light">¿Qué significa <em>realmente ser libre?</em></h2>
-      <p class="freedom__p">La libertad puede comenzar mucho antes de que una puerta se abra. Y también necesita un camino para llegar afuera. Acompañamos las dos.</p>
-      ${btn('/programas/regreso-a-la-libertad', 'Regreso a la libertad', 'btn--gold')}
-    </div>
-    <ul class="freedom__list">
-      ${['Libre de la culpa que repite el peor día', 'Libre del miedo a lo que viene', 'Libre para volver a llamarse por su nombre', 'Libre para reconstruir lo que se rompió', 'Libre para volver a casa con un propósito']
-        .map((t) => `<li data-reveal>${ico('check')}<span>${t}</span></li>`)
-        .join('')}
-    </ul>
-  </div>
-</section>
-
-<section class="voices" aria-labelledby="voices-h">
-  <div class="wrap voices__grid">
-    <figure class="voices__img" data-reveal>${pic('yo-soy-testimonio', 'Mujeres de la fundación con prendas de la campaña “Yo soy testimonio”.', { sizes: '(min-width: 900px) 38vw, 100vw' })}</figure>
-    <div class="voices__txt">
-      <p class="eyebrow">Historias</p>
-      <h2 id="voices-h" class="h2">Escuchar antes <em>de contar</em></h2>
-      <p class="lead" data-reveal>Contamos historias porque escucharlas nos cambió la mirada. Cada una se publica con el consentimiento de su protagonista y a su propio ritmo.</p>
-      <blockquote class="quote-card" data-reveal>${ico('quote')}<p>${founders.liliana}</p><footer>Liliana · Cofundadora</footer></blockquote>
-      ${btn('/historias', 'Leer historias', 'btn--navy')}
-    </div>
-  </div>
-</section>
-
-<section class="verse-band" aria-labelledby="verse-h">
-  <div class="wrap verse-band__in" data-reveal>
-    <p class="eyebrow">Nuestro fundamento</p>
-    <h2 id="verse-h" class="sr">Lucas 4:18</h2>
-    <blockquote><p>“El Espíritu del Señor está sobre mí… me ha <em>enviado</em> a sanar a los quebrantados de corazón; a pregonar <em>libertad</em> a los cautivos.”</p><footer>Lucas 4:18 · Reina-Valera 1960</footer></blockquote>
-  </div>
-</section>
-
-<section class="help" aria-labelledby="help-h">
+<section class="sec" aria-labelledby="hist-h">
   <div class="wrap">
-    <div class="sec-head" data-reveal>
-      <p class="eyebrow">Participa</p>
-      <h2 id="help-h" class="h2">Hay muchas maneras <em>de ser parte</em></h2>
+    ${tw('Nuestra', 'historia', 'hist-h')}
+    <div class="split split--rev">
+      <figure class="split__img" data-reveal>${pic('oracion-acompanamiento', 'Dos mujeres de la fundación oran junto a una mujer sentada en una banca del patio.', { sizes: '(min-width: 900px) 45vw, 100vw' })}</figure>
+      <div class="split__txt" data-reveal>
+        <p class="big">Dios Tras Las Rejas nació de un encuentro.</p>
+        <p>Lina y Liliana llegaron a El Buen Pastor y se encontraron con mujeres cuyas historias iban mucho más allá de una condena. Escucharon, conocieron sus vidas y descubrieron una comunidad llena de preguntas, capacidades, heridas, sueños, fe y ganas de seguir adelante. Y se enamoraron de ellas.</p>
+        <blockquote class="bq"><p>“${founders.lina}”</p><footer>Lina, cofundadora</footer></blockquote>
+        <blockquote class="bq"><p>“${founders.liliana}”</p><footer>Liliana, cofundadora</footer></blockquote>
+        <a class="btn btn--sm" href="/nuestra-historia">Conoce nuestra historia</a>
+      </div>
     </div>
-    <ul class="help__grid">
-      ${[
-        ['heart', 'Dona', 'Sostén el siguiente ciclo de acompañamiento.', '/dona', 'Donar ahora'],
-        ['users', 'Voluntariado', 'Presencia, tiempo y fidelidad dentro y fuera de la cárcel.', '/participa#voluntariado', 'Ser voluntario'],
-        ['church', 'Iglesias', 'Oren, envíen y reciban en comunidad a quienes regresan.', '/participa#iglesias', 'Conectar mi iglesia'],
-        ['building', 'Empresas y aliados', 'Oficio, empleo y alianzas para la vida en libertad.', '/participa#empresas', 'Hacer una alianza'],
-      ]
-        .map(([ic, t, d, h, c]) => `<li class="help__i" data-reveal><a href="${h}">${ico(ic)}<h3>${t}</h3><p>${d}</p><span class="card__more">${c} ${arrow}</span></a></li>`)
-        .join('')}
+  </div>
+</section>
+
+<section class="sec sec--dark" aria-labelledby="lib-h">
+  <div class="sec--dark__media" aria-hidden="true">${pic('capilla', '', { sizes: '100vw' })}</div>
+  <div class="wrap sec--dark__in">
+    ${tw('¿Qué significa ser', 'libre?', 'lib-h')}
+    <ul class="checks">
+      ${['Libre de la culpa que repite el peor día', 'Libre del miedo a lo que viene', 'Libre para volver a llamarse por su nombre', 'Libre para reconstruir lo que se rompió', 'Libre para volver a casa con un propósito'].map((t) => `<li data-reveal>${ico('check')}${t}</li>`).join('')}
+    </ul>
+    <p class="sec--dark__p" data-reveal>La libertad puede comenzar mucho antes de que una puerta se abra. Y también necesita un camino para llegar afuera. Acompañamos las dos.</p>
+    <a class="btn btn--gold" href="/programas/regreso-a-la-libertad">Regreso a la libertad</a>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="ayuda-h">
+  <div class="wrap">
+    ${tw('¿Cómo puedes', 'ayudar?', 'ayuda-h')}
+    <ul class="cols cols--3">
+      ${col({ img: 'taller-producto', alt: 'Pantuflas y prendas elaboradas en los talleres productivos.', title: 'Donaciones', text: 'Tu aporte hace posible el siguiente ciclo de acompañamiento: encuentros, formación, talleres y regreso a la libertad.', href: '/dona', cta: 'Donar' })}
+      ${col({ img: 'oracion-noche', alt: 'Una mujer de la fundación ora de rodillas junto a otra mujer, de noche.', pos: '50% 35%', title: 'Voluntariado', text: 'Presencia, tiempo y fidelidad en visitas, discipulado, talleres o acompañamiento al salir.', href: '/participa#voluntariado', cta: 'Registro para voluntariado' })}
+      ${col({ img: 'encuentro-institucional', alt: 'Mujeres de la fundación en un encuentro institucional.', pos: '50% 30%', title: 'Iglesias, empresas y aliados', text: 'Alianzas concretas que hacen posible el encuentro, como la transformación del Patio 2 junto a God Behind Bars.', href: '/participa#aliados', cta: 'Hacer una alianza' })}
     </ul>
   </div>
 </section>
 
-<section class="give-band" aria-labelledby="give-h">
-  <div class="wrap give-band__grid" data-reveal>
-    <div>
-      <h2 id="give-h" class="h2">Tu aporte no rescata a nadie. <em>Hace posible estar ahí.</em></h2>
-      <p>Sostiene los encuentros, los materiales de formación, los talleres y el acompañamiento el día de la salida.</p>
-      <div class="give-band__act">${btn('/dona', 'Donar ahora', 'btn--navy')}${btn(waLink('Hola, quiero donar a Dios Tras Las Rejas Colombia.'), 'Donar por WhatsApp', 'btn--outline')}</div>
-    </div>
-    <div class="give-band__bank">
-      <p class="give-band__k">Transferencia directa</p>
-      ${bankLine()}
-    </div>
+<section class="sec sec--grey" aria-labelledby="verso-h">
+  <div class="wrap verso" data-reveal>
+    ${tw('Nuestro', 'fundamento', 'verso-h')}
+    <blockquote><p>“El Espíritu del Señor está sobre mí, por cuanto me ha ungido para dar buenas nuevas a los pobres; me ha enviado a sanar a los quebrantados de corazón; a pregonar libertad a los cautivos, y vista a los ciegos; a poner en libertad a los oprimidos.”</p><footer>Lucas 4:18 · Reina-Valera 1960</footer></blockquote>
   </div>
 </section>
 
-<section class="allies-band" aria-label="Aliados">
-  <div class="wrap allies-band__in">
-    <p class="eyebrow">Con el apoyo de</p>
-    <ul>${allies.map((a) => `<li><a href="${a.url}" target="_blank" rel="noopener"><strong>${a.name}</strong><span>${a.note}</span></a></li>`).join('')}<li class="allies-band__you"><a href="/participa#aliados"><strong>Tu organización</strong><span>Súmate como aliado</span></a></li></ul>
+<section class="sec" aria-labelledby="don-h">
+  <div class="wrap">
+    ${tw('Haz posible', 'estar ahí', 'don-h')}
+    <div class="donbox" data-reveal>
+      <div>
+        <p class="big">Tu aporte no rescata a nadie. Hace posible estar ahí.</p>
+        <p>Sostiene los encuentros de acompañamiento, los materiales de formación, los insumos de los talleres productivos y el acompañamiento el día de la salida.</p>
+        <div class="donbox__act"><a class="btn btn--gold" href="/dona">Donar en línea</a><a class="btn" href="${waLink('Hola, quiero donar a Dios Tras Las Rejas Colombia.')}" target="_blank" rel="noopener">Donar por WhatsApp</a></div>
+      </div>
+      <div class="donbox__bank"><h3 class="acc">Transferencia bancaria</h3>${bankLine()}</div>
+    </div>
   </div>
 </section>`,
 });
@@ -416,7 +318,7 @@ ${milestonesBlock()}
     <li data-line><strong>Cuidamos la dignidad</strong><span>Ninguna historia se usa sin consentimiento</span></li>
   </ol>
 </section>
-<section class="manifesto" aria-labelledby="man-h">
+<section class="manifesto" id="manifiesto" aria-labelledby="man-h">
   <div class="wrap manifesto__in">
     ${kicker('Manifiesto', 'k--light')}
     <h2 id="man-h" class="sr">Manifiesto</h2>
