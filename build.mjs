@@ -49,6 +49,5 @@ for (const f of all) {
     for (const u of s.split(',').map((x) => x.trim().split(' ')[0])) if (!existsSync(join(OUT, u))) { console.error(`✗ ${f}: imagen ${u}`); broken++; }
   if ((html.match(/<h1[\s>]/g) || []).length !== 1) { console.error(`✗ ${f}: debe tener exactamente un <h1>`); broken++; }
 }
-if (!process.env.SITE_URL) console.warn(`⚠ SITE_URL no definido: se usó ${site.url} para canonical/OG/sitemap. Configúralo antes de publicar.`);
 if (broken) { console.error(`\n${broken} problema(s). Build fallido.`); process.exit(1); }
 console.log(`✓ ${all.length} páginas generadas en /${OUT}`);
